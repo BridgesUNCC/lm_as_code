@@ -1,0 +1,13 @@
+*.mp4
+*.toml
+*.lock
+*.pyc
+*.txt
+manimations/.python-version
+venv/
+.venv/
+*.json
+media/
+*.ipynb
+.ipynb_checkpoints/InteractivityTest-checkpoint.py
+/manimations
