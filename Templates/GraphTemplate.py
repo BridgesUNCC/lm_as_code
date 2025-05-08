@@ -406,7 +406,7 @@ class BFSAnim(Scene,Assignment):
             print("Can't type!")
             return
         key = chr(symbol).upper()
-        if(self.is_end):
+        if(self.is_end): 
             if(key == 'Y'):
                 self.is_end = False
                 self.build_scene()
@@ -439,7 +439,7 @@ class BFSAnim(Scene,Assignment):
             
             for node, pos in self.pos.items():
                 node_x, node_y, _ = pos
-                if (abs(scene_x - node_x) <= self.node_radius) and (abs(scene_y - node_y) <= self.node_radius):
+                if (abs(scene_x - node_x) <= self.node_radius) and (abs(scene_y - node_y) <= self.node_radius): #Checks if the mouse click was on a node (with some error)
                     print(abs(scene_x-node_x))
                     print(abs(scene_y-node_y))
                     

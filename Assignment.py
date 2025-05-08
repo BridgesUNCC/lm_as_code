@@ -17,7 +17,10 @@ class Assignment():
     option_text=None
     #grade=correct_node/total_questions
     current_assignment_index=1
+    isMultipleChoice=False
+    
 
+    #Checks if  answer is correct, plays corresponding animation. If the answer is correct, move to next question
     def check_answer(self,node):
         if self.feedback_text:
             self.remove(self.feedback_text)
