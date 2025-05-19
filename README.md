@@ -2,14 +2,14 @@
 Basic info:  
     
 To run with UV package manager:   
-Need to have UV installed, https://docs.manim.community/en/stable/installation.html  
-packages needed: see requirements.txt  
-To run the project do: uv run manim Tests/InteractivityTest.py -p --renderer=opengl  
+'-Need to have UV installed, https://docs.manim.community/en/stable/installation.html  
+'-packages needed: see requirements.txt  
+'-To run the project do: uv run manim Tests/InteractivityTest.py -p --renderer=opengl  
 
 
-To run BFSAnim:
-cd .\Templates\
-manim -pqm GraphTemplate.py BFSAnim --renderer=opengl
+To run BFSAnim:  
+'-cd .\Templates\  
+'-manim -pqm GraphTemplate.py BFSAnim --renderer=opengl
 
 BFSAnim Notes:  
 Set input mode to 0 for keyboard input, 1 for mouse input. When running the program  
