@@ -7,6 +7,11 @@ To run with UV package manager:
 - To run the project do: uv run manim Tests/InteractivityTest.py -p --renderer=opengl  
 
 
+To run without UV package manager:
+- cd .\Templates\
+- manim -pqm GraphTemplate.py classname
+- Note: If program states it cannot find Assignments move Assignment.py into the Templates folder.
+
 To run BFSAnim:  
 - cd .\Templates\  
 - manim -pqm GraphTemplate.py BFSAnim --renderer=opengl
