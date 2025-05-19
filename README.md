@@ -2,9 +2,9 @@
 Basic info:  
     
 To run with UV package manager:   
-'-Need to have UV installed, https://docs.manim.community/en/stable/installation.html  
-'-packages needed: see requirements.txt  
-'-To run the project do: uv run manim Tests/InteractivityTest.py -p --renderer=opengl  
+-Need to have UV installed, https://docs.manim.community/en/stable/installation.html  
+-packages needed: see requirements.txt  
+-To run the project do: uv run manim Tests/InteractivityTest.py -p --renderer=opengl  
 
 
 To run BFSAnim:  
