@@ -1,6 +1,12 @@
 if you install with pip, you'll want a recent python >=3.13
 
+If you compile your own python, you want the bz2 stdlib pacakge. So
+make sure you have the bz2 dev package available. On debian: `apt
+install libbz2-dev libsqlite3-dev`
+
 also, you need pkg-config setup to compile cairo things. In debian
 `apt install librust-pangocairo-dev` did the trick. But that's
 probably overkill. I am guessing that `libcairo2-dev
 libpangocairo-1.0-0` is all you actually need.
+
+`pip install IPython manim`
