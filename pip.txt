@@ -1,0 +1,6 @@
+if you install with pip, you'll want a recent python >=3.13
+
+also, you need pkg-config setup to compile cairo things. In debian
+`apt install librust-pangocairo-dev` did the trick. But that's
+probably overkill. I am guessing that `libcairo2-dev
+libpangocairo-1.0-0` is all you actually need.
