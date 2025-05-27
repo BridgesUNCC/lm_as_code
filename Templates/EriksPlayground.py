@@ -1,11 +1,9 @@
 from manim import *
 import random
-import time
 import networkx as nx
 from typing import override
 from networkx.algorithms import tree
 #from jsons.handlejson import importjson
-import time
 from Assignment import Assignment
 
 #Helper function used to randomly populate a graph's edges and nodes. 
