@@ -5,7 +5,6 @@ import networkx as nx
 from typing import override
 from networkx.algorithms import tree
 #from jsons.handlejson import importjson
-import IPython
 import time
 from Assignment import Assignment
 
