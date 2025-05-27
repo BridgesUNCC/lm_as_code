@@ -3,8 +3,6 @@ import random
 import networkx as nx
 from typing import override
 from networkx.algorithms import tree
-#from jsons.handlejson import importjson
-from Assignment import Assignment
 
 #Helper function used to randomly populate a graph's edges and nodes. 
 #Utilized by the SPFAlgorithm Class.
@@ -90,21 +88,39 @@ class SPFAlgorithm(Scene):
         mstGraph.add_weighted_edges_from(weightedEdgesArr)
         mst = tree.minimum_spanning_edges(mstGraph, data = True, algorithm="prim")
         mstEdges = list(mst)
-        
+        animation_steps = []
+        for edge in mstEdges:
+                type = "edgecolor"
+                if(edge[0], edge[1]) in sceneNXGraph.edges: 
+                        temp = (edge[0], edge[1])
+                else:
+                        temp = (edge[1], edge[0])
+                src = temp[0]
+                dst = temp[1]
+                color = "red"
+                animation_steps.append( {"type": type, "src": src, "dst":dst, "color":color} )
+                type = "vertexcolor"
+                vertex = edge[0]
+                color = "red"
+                animation_steps.append( {"type": type, "vertex": vertex, "color":color} )
+                type = "vertexcolor"
+                vertex = edge[1]
+                color = "red"
+                animation_steps.append( {"type": type, "vertex": vertex, "color":color} )
+                
+                
+                
+                
         #Animation.
         self.add(sceneGraph, edgeLabels)
         self.play(sceneGraph.vertices[mstEdges[0][0]].animate.set_color(RED)) #Highlights first node.
-        for edge in mstEdges:
-            #Matching edge values to a tuple in the original edges array (value order inconsistent between sceneGraph & mstGraph)
-            if(edge[0], edge[1]) in sceneNXGraph.edges: 
-                temp = (edge[0], edge[1])
-            else:
-                temp = (edge[1], edge[0])
-            self.play(sceneGraph.edges[temp].animate.set_color(RED)) #Highlight the chosen edge.
-            if sceneGraph.vertices[temp[0]].get_color() != RED: #Check if the first node is highlighted.
-                self.play(sceneGraph.vertices[temp[0]].animate.set_color(RED))
-            if sceneGraph.vertices[temp[1]].get_color() != RED: #Check if the second node is highlighted
-                self.play(sceneGraph.vertices[temp[1]].animate.set_color(RED))
+
+        for animation_step in animation_steps:
+                if animation_step["type"] == "edgecolor":
+                        temp = (animation_step["src"], animation_step["dst"])
+                        self.play(sceneGraph.edges[temp].animate.set_color(RED))
+                if animation_step["type"] == "vertexcolor":
+                        self.play(sceneGraph.vertices[animation_step["vertex"]].animate.set_color(RED))
             
         
         
