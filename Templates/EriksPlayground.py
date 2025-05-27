@@ -23,19 +23,15 @@ def randomEdgeGen(vCount: int, edgesArr: list):
 
 
         
-        
-                      
-#Class used to implement Prim's Shortest Path First Algorithm. No Interactivity.   
-class SPFAlgorithm(Scene):
-    def construct(self):
+def makegraph():
         #Scene graph parameters.
         vCount = 8
         pos = {
             0:(0,4,0),
-            1:(-2,2,0),
-            2:(2,2,0),
-            3:(-2,-2,0),
-            4:(2,-2,0),
+            1:(-1.5,1.5,0),
+            2:(1,1.5,0),
+            3:(-1.5,-1.5,0),
+            4:(1,-1.5,0),
             5:(0,-4,0),
             6:(-4,0,0),
             7:(4,0,0)
@@ -48,16 +44,37 @@ class SPFAlgorithm(Scene):
         sceneNXGraph = nx.DiGraph() #Ensures edge tuple (u, v) doesn't get flipped to (v, u).
         sceneNXGraph.add_nodes_from(verticesArr)
         sceneNXGraph.add_edges_from(edgesArr)
+
+        for v in sceneNXGraph:
+                print (v, pos[v])
+                nx.set_node_attributes(sceneNXGraph, {v: {"pos": pos[v]}}) #G[v]["pos"] is a 3d position tuple
+
+        
+        for edge in edgesArr:
+                w = random.randrange(1,10)
+                nx.set_edge_attributes(sceneNXGraph, {edge: {"weight": w}})
+        
+                
+        return sceneNXGraph
+
+                      
+#Class used to implement Prim's Shortest Path First Algorithm. No Interactivity.   
+class SPFAlgorithm(Scene):
+    def construct(self):
+
+        sceneNXGraph = makegraph()
+
+        the_pos = {v: sceneNXGraph.nodes[v]["pos"] for v in sceneNXGraph}
+        
         sceneGraph = Graph.from_networkx(sceneNXGraph, 
-                                         layout = pos, 
+                                         layout = the_pos, 
                                          labels = True, 
                                          label_fill_color = BLUE,
                                          layout_scale = 4.0, 
                                          edge_type = DashedLine)
         
         #Weight population
-        weights = [random.randrange(1,10) for edge in edgesArr]
-        weightedEdgesArr = [(*edge, weights[i]) for i, edge in enumerate(edgesArr)]
+        weightedEdgesArr = [(edge[0], edge[1], sceneNXGraph.edges[edge]["weight"]) for edge in sceneNXGraph.edges()]
         
         #Weight label mobject creation & positioning.
         edgeLabels = VGroup()
@@ -72,7 +89,7 @@ class SPFAlgorithm(Scene):
         
         #Calculate minnimum spanning tree of the graph using Prim's algorithm.
         mstGraph = nx.Graph() #Duplicate graph of sceneNXGraph. Used to calculate minnimum spanning tree.
-        mstGraph.add_nodes_from(verticesArr)
+        mstGraph.add_nodes_from([v for v in sceneNXGraph.nodes])
         mstGraph.add_weighted_edges_from(weightedEdgesArr)
         mst = tree.minimum_spanning_edges(mstGraph, data = True, algorithm="prim")
         mstEdges = list(mst)
@@ -82,7 +99,7 @@ class SPFAlgorithm(Scene):
         self.play(sceneGraph.vertices[mstEdges[0][0]].animate.set_color(RED)) #Highlights first node.
         for edge in mstEdges:
             #Matching edge values to a tuple in the original edges array (value order inconsistent between sceneGraph & mstGraph)
-            if(edge[0], edge[1]) in edgesArr: 
+            if(edge[0], edge[1]) in sceneNXGraph.edges: 
                 temp = (edge[0], edge[1])
             else:
                 temp = (edge[1], edge[0])
