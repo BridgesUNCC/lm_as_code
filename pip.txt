@@ -1,12 +1,30 @@
-if you install with pip, you'll want a recent python >=3.13
+If you install with pip, you'll want a recent python >=3.13
+
+## Compile you own python
 
 If you compile your own python, you want the bz2 stdlib pacakge. So
-make sure you have the bz2 dev package available. On debian: `apt
-install libbz2-dev libsqlite3-dev`
+make sure you have the bz2 dev package available. On debian:
+
+```
+$ mkdir ~/prgs; cd ~/prgs
+$ sudo apt install build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python3-openssl git # to install dependencies
+$ wget https://www.python.org/ftp/python/3.13.3/Python-3.13.3.tgz
+$ tar -xvf Python-3.13.3.tgz 
+$ cd Python-3.13.3/
+$ ./configure --enable-optimizations --prefix=/opt/python-3.13.3
+$ make -j 12
+$ sudo make install
+```
+
+that will install python 3.13 in `/opt/python-3.13.3`
+
+## Dependencies
 
 also, you need pkg-config setup to compile cairo things. In debian
 `apt install librust-pangocairo-dev` did the trick. But that's
 probably overkill. I am guessing that `libcairo2-dev
 libpangocairo-1.0-0` is all you actually need.
+
+# actually install manim
 
 `pip install IPython manim`
