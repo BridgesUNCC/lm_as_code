@@ -41,7 +41,7 @@ def makegraph():
         sceneNXGraph.add_edges_from(edgesArr)
 
         for v in sceneNXGraph:
-                print (v, pos[v])
+                #print (v, pos[v])
                 nx.set_node_attributes(sceneNXGraph, {v: {"pos": pos[v]}}) #G[v]["pos"] is a 3d position tuple
 
         
@@ -49,12 +49,44 @@ def makegraph():
                 w = random.randrange(1,10)
                 nx.set_edge_attributes(sceneNXGraph, {edge: {"weight": w}})
         
-                
+
+        print (nx.node_link_data((sceneNXGraph)))
         return sceneNXGraph
 
-                      
-#Class used to implement Prim's Shortest Path First Algorithm. No Interactivity.   
-class SPFAlgorithm(Scene):
+
+def make_animation(sceneNXGraph):
+        weightedEdgesArr = [(edge[0], edge[1], sceneNXGraph.edges[edge]["weight"]) for edge in sceneNXGraph.edges()]
+
+        #Calculate minnimum spanning tree of the graph using Prim's algorithm.
+        mstGraph = nx.Graph() #Duplicate graph of sceneNXGraph. Used to calculate minnimum spanning tree.
+        mstGraph.add_nodes_from([v for v in sceneNXGraph.nodes])
+        mstGraph.add_weighted_edges_from(weightedEdgesArr)
+        mst = tree.minimum_spanning_edges(mstGraph, data = True, algorithm="prim")
+        mstEdges = list(mst)
+        animation_steps = []
+        animation_steps.append( {"type": "vertexcolor", "vertex":mstEdges[0][0], "color":[1.,0.,0.,1.]} )
+        for edge in mstEdges:
+                type = "edgecolor"
+                if(edge[0], edge[1]) in sceneNXGraph.edges: 
+                        temp = (edge[0], edge[1])
+                else:
+                        temp = (edge[1], edge[0])
+                src = temp[0]
+                dst = temp[1]
+                color = [0.,1.,0.,1.]
+                animation_steps.append( {"type": type, "src": src, "dst":dst, "color":color} )
+                type = "vertexcolor"
+                vertex = edge[0]
+                color = [1.,0.,0.,1.]
+                animation_steps.append( {"type": type, "vertex": vertex, "color":color} )
+                type = "vertexcolor"
+                vertex = edge[1]
+                color = [1.,0.,0.,1.]
+                animation_steps.append( {"type": type, "vertex": vertex, "color":color} )
+        print (animation_steps)
+        return animation_steps
+
+class Renderer(Scene):
     def construct(self):
 
         sceneNXGraph = makegraph()
@@ -70,6 +102,8 @@ class SPFAlgorithm(Scene):
         
         #Weight population
         weightedEdgesArr = [(edge[0], edge[1], sceneNXGraph.edges[edge]["weight"]) for edge in sceneNXGraph.edges()]
+
+        animation_steps = make_animation(sceneNXGraph)
         
         #Weight label mobject creation & positioning.
         edgeLabels = VGroup()
@@ -81,46 +115,17 @@ class SPFAlgorithm(Scene):
             center = edgeLine.get_center()
             label.move_to(center)
             edgeLabels.add(label)
-        
-        #Calculate minnimum spanning tree of the graph using Prim's algorithm.
-        mstGraph = nx.Graph() #Duplicate graph of sceneNXGraph. Used to calculate minnimum spanning tree.
-        mstGraph.add_nodes_from([v for v in sceneNXGraph.nodes])
-        mstGraph.add_weighted_edges_from(weightedEdgesArr)
-        mst = tree.minimum_spanning_edges(mstGraph, data = True, algorithm="prim")
-        mstEdges = list(mst)
-        animation_steps = []
-        for edge in mstEdges:
-                type = "edgecolor"
-                if(edge[0], edge[1]) in sceneNXGraph.edges: 
-                        temp = (edge[0], edge[1])
-                else:
-                        temp = (edge[1], edge[0])
-                src = temp[0]
-                dst = temp[1]
-                color = "red"
-                animation_steps.append( {"type": type, "src": src, "dst":dst, "color":color} )
-                type = "vertexcolor"
-                vertex = edge[0]
-                color = "red"
-                animation_steps.append( {"type": type, "vertex": vertex, "color":color} )
-                type = "vertexcolor"
-                vertex = edge[1]
-                color = "red"
-                animation_steps.append( {"type": type, "vertex": vertex, "color":color} )
-                
-                
-                
+
                 
         #Animation.
         self.add(sceneGraph, edgeLabels)
-        self.play(sceneGraph.vertices[mstEdges[0][0]].animate.set_color(RED)) #Highlights first node.
 
         for animation_step in animation_steps:
                 if animation_step["type"] == "edgecolor":
                         temp = (animation_step["src"], animation_step["dst"])
-                        self.play(sceneGraph.edges[temp].animate.set_color(RED))
+                        self.play(sceneGraph.edges[temp].animate.set_color(ManimColor(animation_step["color"])))
                 if animation_step["type"] == "vertexcolor":
-                        self.play(sceneGraph.vertices[animation_step["vertex"]].animate.set_color(RED))
+                        self.play(sceneGraph.vertices[animation_step["vertex"]].animate.set_color(ManimColor(animation_step["color"])))
             
         
         
