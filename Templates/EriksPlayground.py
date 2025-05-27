@@ -3,6 +3,7 @@ import random
 import networkx as nx
 from typing import override
 from networkx.algorithms import tree
+import json
 
 #Helper function used to randomly populate a graph's edges and nodes. 
 def randomEdgeGen(vCount: int, edgesArr: list):
@@ -49,8 +50,10 @@ def makegraph():
                 nx.set_edge_attributes(sceneNXGraph, {edge: {"weight": w}})
         
 
-        print (nx.node_link_data((sceneNXGraph)))
-        return sceneNXGraph
+        jsonserial = nx.node_link_data((sceneNXGraph))
+        print (jsonserial)
+        
+        return jsonserial
 
 
 def make_animation(sceneNXGraph):
@@ -73,29 +76,32 @@ def make_animation(sceneNXGraph):
                 src = temp[0]
                 dst = temp[1]
                 color = [0.,1.,0.,1.]
-                animation_steps.append( [ {"type": type, "src": src, "dst":dst, "color":color} ] )
+                animation_steps.append( [ {"type": type, "src": src, "dst":dst, "color": color} ] )
                 type = "vertexcolor"
                 vertex = edge[0]
                 color = [1.,0.,0.,1.]
-                ahhh = {"type": type, "vertex": vertex, "color":color}
+                ahhh = {"type": type, "vertex": vertex, "color": color}
                 type = "vertexcolor"
                 vertex = edge[1]
                 color = [1.,0.,0.,1.]
-                bhhh = {"type": type, "vertex": vertex, "color":color}
+                bhhh = {"type": type, "vertex": vertex, "color": color}
                 animation_steps.append( [ ahhh, bhhh ] )
-        print (animation_steps)
-        return animation_steps
+        #print (animation_steps)
+        animation_json = json.dumps(animation_steps)
+        print (animation_json)
+        return animation_json
 
 class Renderer(Scene):
     def construct(self):
 
-        sceneNXGraph = makegraph()
-
+        sceneNXGraph = nx.node_link_graph(makegraph())
+        animation_steps = json.loads(make_animation(sceneNXGraph))
+        
         the_pos = {v: sceneNXGraph.nodes[v]["pos"] for v in sceneNXGraph}
         
         sceneGraph = Graph.from_networkx(sceneNXGraph, 
                                          layout = the_pos, 
-                                         labels = True, 
+                                         labels = True, #Vertex labels
                                          label_fill_color = BLUE,
                                          layout_scale = 4.0, 
                                          edge_type = DashedLine)
@@ -103,7 +109,6 @@ class Renderer(Scene):
         #Weight population
         weightedEdgesArr = [(edge[0], edge[1], sceneNXGraph.edges[edge]["weight"]) for edge in sceneNXGraph.edges()]
 
-        animation_steps = make_animation(sceneNXGraph)
         
         #Weight label mobject creation & positioning.
         edgeLabels = VGroup()
