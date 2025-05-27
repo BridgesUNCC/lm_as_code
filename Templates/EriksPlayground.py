@@ -5,7 +5,6 @@ from typing import override
 from networkx.algorithms import tree
 
 #Helper function used to randomly populate a graph's edges and nodes. 
-#Utilized by the SPFAlgorithm Class.
 def randomEdgeGen(vCount: int, edgesArr: list):
     for i in range(vCount):
         while(True): #Loop is used to ensure no duplicate edges.
@@ -36,7 +35,7 @@ def makegraph():
         randomEdgeGen(vCount, edgesArr)
         
         #Scene graph creation
-        sceneNXGraph = nx.DiGraph() #Ensures edge tuple (u, v) doesn't get flipped to (v, u).
+        sceneNXGraph = nx.Graph()
         sceneNXGraph.add_nodes_from(verticesArr)
         sceneNXGraph.add_edges_from(edgesArr)
 
@@ -64,7 +63,7 @@ def make_animation(sceneNXGraph):
         mst = tree.minimum_spanning_edges(mstGraph, data = True, algorithm="prim")
         mstEdges = list(mst)
         animation_steps = []
-        animation_steps.append( {"type": "vertexcolor", "vertex":mstEdges[0][0], "color":[1.,0.,0.,1.]} )
+        animation_steps.append( [ {"type": "vertexcolor", "vertex":mstEdges[0][0], "color":[1.,0.,0.,1.]} ] )
         for edge in mstEdges:
                 type = "edgecolor"
                 if(edge[0], edge[1]) in sceneNXGraph.edges: 
@@ -74,15 +73,16 @@ def make_animation(sceneNXGraph):
                 src = temp[0]
                 dst = temp[1]
                 color = [0.,1.,0.,1.]
-                animation_steps.append( {"type": type, "src": src, "dst":dst, "color":color} )
+                animation_steps.append( [ {"type": type, "src": src, "dst":dst, "color":color} ] )
                 type = "vertexcolor"
                 vertex = edge[0]
                 color = [1.,0.,0.,1.]
-                animation_steps.append( {"type": type, "vertex": vertex, "color":color} )
+                ahhh = {"type": type, "vertex": vertex, "color":color}
                 type = "vertexcolor"
                 vertex = edge[1]
                 color = [1.,0.,0.,1.]
-                animation_steps.append( {"type": type, "vertex": vertex, "color":color} )
+                bhhh = {"type": type, "vertex": vertex, "color":color}
+                animation_steps.append( [ ahhh, bhhh ] )
         print (animation_steps)
         return animation_steps
 
@@ -121,11 +121,22 @@ class Renderer(Scene):
         self.add(sceneGraph, edgeLabels)
 
         for animation_step in animation_steps:
-                if animation_step["type"] == "edgecolor":
-                        temp = (animation_step["src"], animation_step["dst"])
-                        self.play(sceneGraph.edges[temp].animate.set_color(ManimColor(animation_step["color"])))
-                if animation_step["type"] == "vertexcolor":
-                        self.play(sceneGraph.vertices[animation_step["vertex"]].animate.set_color(ManimColor(animation_step["color"])))
+            the_actions = []
+            for action in animation_step:
+                if action["type"] == "edgecolor":
+                    edge=None
+                    try:
+                        temp = (action["src"], action["dst"])
+                        edge = sceneGraph.edges[temp]
+                    except KeyError as e: #this is normal in undirected graph
+                        temp = (action["dst"], action["src"])
+                        edge = sceneGraph.edges[temp]
+                        
+                    the_actions.append(edge.animate.set_color(ManimColor(action["color"])))
+                if action["type"] == "vertexcolor":
+                    the_actions.append (sceneGraph.vertices[action["vertex"]].animate.set_color(ManimColor(action["color"])))
+            self.play (the_actions)
+                
             
         
         
