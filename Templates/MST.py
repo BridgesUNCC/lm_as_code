@@ -63,7 +63,7 @@ def make_animation(sceneNXGraph):
         mst = tree.minimum_spanning_edges(mstGraph, data = True, algorithm="prim")
         mstEdges = list(mst)
         animation_steps = []
-        animation_steps.append( [ {"type": "vertexcolor", "vertex":mstEdges[0][0], "color":[1.,0.,0.,1.]} ] )
+        animation_steps.append( [ {"applyon":"G", "data": {"type": "vertexcolor", "vertex":mstEdges[0][0], "color":[1.,0.,0.,1.]} } ] )
         for edge in mstEdges:
                 type = "edgecolor"
                 if(edge[0], edge[1]) in sceneNXGraph.edges: 
@@ -73,15 +73,15 @@ def make_animation(sceneNXGraph):
                 src = temp[0]
                 dst = temp[1]
                 color = [0.,1.,0.,1.]
-                animation_steps.append( [ {"type": type, "src": src, "dst":dst, "color": color} ] )
+                animation_steps.append( [ {"applyon": "G", "data": {"type": type, "src": src, "dst":dst, "color": color}} ] )
                 type = "vertexcolor"
                 vertex = edge[0]
                 color = [1.,0.,0.,1.]
-                ahhh = {"type": type, "vertex": vertex, "color": color}
+                ahhh = {"applyon":"G", "data": {"type": type, "vertex": vertex, "color": color}}
                 type = "vertexcolor"
                 vertex = edge[1]
                 color = [1.,0.,0.,1.]
-                bhhh = {"type": type, "vertex": vertex, "color": color}
+                bhhh = {"applyon":"G", "data": {"type": type, "vertex": vertex, "color": color}}
                 animation_steps.append( [ ahhh, bhhh ] )
         #print (animation_steps)
 
@@ -92,7 +92,7 @@ if __name__ == "__main__":
     my_graph = makegraph()
     animation = make_animation(my_graph)
 
-    graph_as_dict = nx.node_link_data((my_graph))
+    graph_as_dict = {"G": { "type": "nx", "data": nx.node_link_data((my_graph))}}
 
     data = { "initial": graph_as_dict,
             "animation": animation}

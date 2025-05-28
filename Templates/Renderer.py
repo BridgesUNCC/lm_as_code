@@ -131,16 +131,26 @@ class Renderer(Scene):
         construct the animation object.
 
         {
-        "G": {
+        name: {
           "type" : str,
           "data" : some data
           }
         }
 
 
-        animation is a list of animation step. Each step is a step of
-        actual actions. Each step executed all the actions at the same
-        time.
+        animation is a list of animation step. Each animation step is
+        a list of actual actions. Each step executes all the
+        actions at the same time.
+
+        actions are dictionaries with two fields: "applyon" and
+        "data". applyon indicates which AnimationObject is impacted by
+        the action and data is parameters to pass to the
+        AnimationObject.animate function
+
+        {
+          "applyon": name,
+          "data": some data
+        }
 
         '''
         with open(self.datafile) as inputfile:
@@ -160,7 +170,9 @@ class Renderer(Scene):
         for animation_step in self.animation_steps:
             the_actions = []
             for action in animation_step:
-                the_actions.extend(self.objects["G"].animate(action))
+                applyon = action["applyon"] #TODO check for string
+                data = action["data"]
+                the_actions.extend(self.objects[applyon].animate(data))
             self.play (the_actions)
                 
   
