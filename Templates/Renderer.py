@@ -107,30 +107,37 @@ class NetworkXGraph(AnimatedObject):
             return [ self.sceneGraph.vertices[action["vertex"]].animate.set_color(ManimColor(action["color"])) ]
         AnimatedObject.animate(self, action)
 
-    
-    
         
 class Renderer(Scene):
     animation_steps = None
     object = None
 
     def setup(self):
+        '''
+        this expects that an inputfilename is populated in self.datafile.
+        this file should be JSON format and contain a dict
+        the dict should be formated as this:
+
+        {
+        "initial": [ ...
+          ],
+        "animation": [ ...
+          ]
+        }
+        '''
         with open(self.datafile) as inputfile:
             data = json.load(inputfile)
             self.object = NetworkXGraph(self, data["initial"])
             self.animation_steps = data["animation"]
         
     def construct(self):
-                
         #Animation.
-
         for animation_step in self.animation_steps:
             the_actions = []
             for action in animation_step:
                 the_actions.extend(self.object.animate(action))
             self.play (the_actions)
                 
-            
   
 if __name__ == '__main__':
     scene = Renderer()
