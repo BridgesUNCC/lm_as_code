@@ -110,24 +110,49 @@ class NetworkXGraph(AnimatedObject):
         
 class Renderer(Scene):
     animation_steps = None
-    object = None
+    objects = {}
 
     def setup(self):
-        '''
-        this expects that an inputfilename is populated in self.datafile.
-        this file should be JSON format and contain a dict
-        the dict should be formated as this:
-
+        '''this expects that an inputfilename is populated in self.datafile.
+        this file should be JSON format and contain a dict the dict
+        should be formated as this where "initial" is a dictionary of
+        AnimationObject and animation is a list of animation step
+        
         {
-        "initial": [ ...
-          ],
+        "initial": { ...
+          },
         "animation": [ ...
           ]
         }
+
+        initial is a dictionary. The dictionary give names to
+        animation objects. names are string. The animation object are
+        defined by a type which is a string and a data object used to
+        construct the animation object.
+
+        {
+        "G": {
+          "type" : str,
+          "data" : some data
+          }
+        }
+
+
+        animation is a list of animation step. Each step is a step of
+        actual actions. Each step executed all the actions at the same
+        time.
+
         '''
         with open(self.datafile) as inputfile:
             data = json.load(inputfile)
-            self.object = NetworkXGraph(self, data["initial"])
+            initialdata = data["initial"]
+            
+            for key, value in initialdata.items():
+                print (key, value)
+                #TODO check key is string
+                if value["type"] == "nx":
+                    self.objects[key] = NetworkXGraph(self, value["data"])
+
             self.animation_steps = data["animation"]
         
     def construct(self):
@@ -135,7 +160,7 @@ class Renderer(Scene):
         for animation_step in self.animation_steps:
             the_actions = []
             for action in animation_step:
-                the_actions.extend(self.object.animate(action))
+                the_actions.extend(self.objects["G"].animate(action))
             self.play (the_actions)
                 
   
