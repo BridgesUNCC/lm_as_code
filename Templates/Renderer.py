@@ -42,7 +42,7 @@ class NetworkXGraph:
             
         self.renderer.add(self.sceneGraph, self.edgeLabels)
 
-    def animate(self, action):
+    def animate(self, action) -> List[Animation]:
         if action["type"] == "edgecolor":
             edge=None
             try:
@@ -52,9 +52,9 @@ class NetworkXGraph:
                 temp = (action["dst"], action["src"])
                 edge = self.sceneGraph.edges[temp]
                         
-            return edge.animate.set_color(ManimColor(action["color"]))
+            return [ edge.animate.set_color(ManimColor(action["color"])) ]
         if action["type"] == "vertexcolor":
-            return self.sceneGraph.vertices[action["vertex"]].animate.set_color(ManimColor(action["color"]))
+            return [ self.sceneGraph.vertices[action["vertex"]].animate.set_color(ManimColor(action["color"])) ]
         raise "WTF"
 
         
@@ -75,7 +75,7 @@ class Renderer(Scene):
         for animation_step in self.animation_steps:
             the_actions = []
             for action in animation_step:
-                the_actions.append(self.object.animate(action))
+                the_actions.extend(self.object.animate(action))
             self.play (the_actions)
                 
             
