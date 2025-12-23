@@ -30,6 +30,6 @@ python3 Animations/MST.py myMST.json
 ## Rendering
 
 ```bash
-python3 Templates/Renderer.py myMST.json
+python3 Renderer/Renderer.py myMST.json
 ls media/videos/*/Renderer.mp4
 ```
