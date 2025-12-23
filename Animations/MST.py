@@ -73,7 +73,8 @@ def make_animation(sceneNXGraph):
                 src = temp[0]
                 dst = temp[1]
                 color = [0.,1.,0.,1.]
-                animation_steps.append( [ {"applyon": "G", "data": {"type": type, "src": src, "dst":dst, "color": color}} ] )
+                tts1 = {"applyon":"tts", "data":{"type":"say", "text": f"Adding edge ({src}, {dst}) as part of the spanning tree."}}
+                animation_steps.append( [ {"applyon": "G", "data": {"type": type, "src": src, "dst":dst, "color": color}} , tts1] )
                 type = "vertexcolor"
                 vertex = edge[0]
                 color = [1.,0.,0.,1.]
@@ -82,7 +83,8 @@ def make_animation(sceneNXGraph):
                 vertex = edge[1]
                 color = [1.,0.,0.,1.]
                 bhhh = {"applyon":"G", "data": {"type": type, "vertex": vertex, "color": color}}
-                animation_steps.append( [ ahhh, bhhh ] )
+                tts2 = {"applyon":"tts", "data":{"type":"say", "text": f"Marking both {src} and {dst} as reached."}}
+                animation_steps.append( [ ahhh, bhhh, tts2] )
         #print (animation_steps)
 
         return animation_steps
@@ -92,9 +94,12 @@ if __name__ == "__main__":
     my_graph = makegraph()
     animation = make_animation(my_graph)
 
-    graph_as_dict = {"G": { "type": "nx", "data": nx.node_link_data((my_graph))}}
-
-    data = { "initial": graph_as_dict,
+    initial_state = {}
+    
+    initial_state["G"] = { "type": "nx", "data": nx.node_link_data((my_graph))}
+    initial_state["tts"] = {"type": "tts", "data":{}}
+    
+    data = { "initial": initial_state,
             "animation": animation}
 
     json_str = json.dumps(data, indent=2)
