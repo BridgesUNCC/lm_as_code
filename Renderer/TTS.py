@@ -18,8 +18,12 @@ class TTS(AnimatedObject):
     
     def animate(self, action:dict) -> list[Animation]:
         '''
+        All actions should have one field: "type"
+
+        For type "say", the action should have the field "text" which should be a string with the text to say.
         '''
         if action["type"] == "say":
+            text = action["text"] #todo check for string type
             return [ ]
         AnimatedObject.animate(self, action)
         
