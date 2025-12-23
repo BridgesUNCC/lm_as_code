@@ -97,7 +97,7 @@ if __name__ == "__main__":
     data = { "initial": graph_as_dict,
             "animation": animation}
 
-    json_str = json.dumps(data)
+    json_str = json.dumps(data, indent=2)
     with open(sys.argv[1], "w") as out:
         out.write(json_str)
 
