@@ -1,31 +1,35 @@
-# manim_project
-Basic info:  
-    
-To run with UV package manager:   
-- Need to have UV installed, https://docs.manim.community/en/stable/installation.html  
-- packages needed: see requirements.txt  
-- To run the project do: uv run manim Tests/InteractivityTest.py -p --renderer=opengl  
+#
 
+## Install
 
-To run without UV package manager:
-- cd .\Templates\
-- manim -pqm GraphTemplate.py classname
-- Note: If program states it cannot find Assignments move Assignment.py into the Templates folder.
+There is a requirements.txt to setup python.
 
-To run BFSAnim:  
-- cd .\Templates\  
-- manim -pqm GraphTemplate.py BFSAnim --renderer=opengl
+Be warn, the libraries are HUGE.
 
-BFSAnim Notes:  
-Set input mode to 0 for keyboard input, 1 for mouse input. When running the program  
-use keyboard to input answer choices or mouse to select the node that will be traversed next.  
+```bash
+python -m venv venv
+.\venv\Scripts\activate
+pip install -r requirements.txt
+```
 
+## Structure
 
-## Assignment
-Assignment is a group of questions, and correct answers. It is limited to multiple choice, free response will not work due to having to generate a new animation with every key press. You can check answer, start next question, generate visible multiple choice options on   screen (guarantees atleast 1 correct), and complete all assignments.  
+The system is in multiple part. The core design is that there is a
+first program that generates the information about an animation. This
+is the code that a user would write in order to generate their own
+animation. That code outputs a JSON that describe the animation.
 
-## Interactivity 
+Then there is a renderer that will take that JSON and produce a video.
 
-The interactivity is done using the pyglet library, specifically, on_mouse_press which records location of the mouse when clicked. and on_key_press which records key strokes. Currently, only keystrokes OR mouse input is enabled, but can be easily changed. assignment and check_answer are also overriden, but only to add some animations.  
+## Running
 
+```bash
+python3 Animations/MST.py myMST.json
+```
 
+## Rendering
+
+```bash
+python3 Templates/Renderer.py myMST.json
+ls media/videos/*/Renderer.mp4
+```
