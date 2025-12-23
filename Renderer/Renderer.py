@@ -4,12 +4,15 @@ from typing import override
 import json
 import sys
 from AnimatedObject import AnimatedObject
-from TTS import TTS
+from TTSanimation import TTSanimation
 from NetworkXGraph import NetworkXGraph
 
 
         
 class Renderer(Scene):
+    '''
+    Renderer is a manim scene
+    '''
     animation_steps = None
     objects = {}
 
@@ -65,7 +68,7 @@ class Renderer(Scene):
                     self.objects[key] = NetworkXGraph(self, value["data"])
 
                 if value["type"] == "tts":
-                    self.objects[key] = TTS(self, value["data"])
+                    self.objects[key] = TTSanimation(self, value["data"])
 
                     
             self.animation_steps = data["animation"]
@@ -82,6 +85,7 @@ class Renderer(Scene):
                 
   
 if __name__ == '__main__':
+    #config.disable_caching=True
     scene = Renderer()
     scene.datafile = sys.argv[1]
     scene.render() # That's it!
