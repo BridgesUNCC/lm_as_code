@@ -81,6 +81,9 @@ class NetworkXGraph(AnimatedObject):
                 edge = self.sceneGraph.edges[temp]
                         
             return [ edge.animate.set_color(ManimColor(action["color"])) ]
+        
         if action["type"] == "vertexcolor":
             return [ self.sceneGraph.vertices[action["vertex"]].animate.set_color(ManimColor(action["color"])) ]
+
+        
         AnimatedObject.animate(self, action)

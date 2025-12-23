@@ -4,6 +4,7 @@ from typing import override
 import json
 import sys
 from AnimatedObject import AnimatedObject
+from TTS import TTS
 from NetworkXGraph import NetworkXGraph
 
 
@@ -63,6 +64,10 @@ class Renderer(Scene):
                 if value["type"] == "nx":
                     self.objects[key] = NetworkXGraph(self, value["data"])
 
+                if value["type"] == "tts":
+                    self.objects[key] = TTS(self, value["data"])
+
+                    
             self.animation_steps = data["animation"]
         
     def construct(self):
