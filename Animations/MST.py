@@ -71,6 +71,9 @@ def make_animation(animatedgraph: NetworkXGraph, tts: TTSanimation):
         sceneNXGraph = animatedgraph.nxgraph #treat as read only
         weightedEdgesArr = [(edge[0], edge[1], sceneNXGraph.edges[edge]["weight"]) for edge in sceneNXGraph.edges()]
 
+        edgeMarkColor = [0.,1.,0.,1.]
+        vertexMarkColor = [1.,0.,0.,0.6]
+        
        
         #Calculate minimum spanning tree of the graph using Prim's algorithm.
         mstGraph = nx.Graph() #Duplicate graph of sceneNXGraph. Used to calculate minnimum spanning tree.
@@ -80,11 +83,13 @@ def make_animation(animatedgraph: NetworkXGraph, tts: TTSanimation):
         mstEdges = list(mst)
         animation_steps = []
         mark = {}
+        animatedgraph.color_vertex(mstEdges[0][0], vertexMarkColor)
         tts.say(f"Marking {mstEdges[0][0]} as initial vertex reached.")
         mark[mstEdges[0][0]] = True
-        animation_steps.append( [ {"applyon":"G", "data": {"type": "vertexcolor", "vertex":mstEdges[0][0], "color":[1.,0.,0.,0.6]} }] + tts.flush_animations() )
-        edgeMarkColor = [0.,1.,0.,1.]
+        animation_steps.append(animatedgraph.flush_animations() + tts.flush_animations() )
 
+
+        
         for edge in mstEdges:
                 if(edge[0], edge[1]) in sceneNXGraph.edges: 
                         temp = (edge[0], edge[1])
@@ -94,30 +99,25 @@ def make_animation(animatedgraph: NetworkXGraph, tts: TTSanimation):
                 dst = temp[1]
                 
                 animatedgraph.color_edge(src, dst, edgeMarkColor)
-                animation_steps.append( animatedgraph.flush_animations() +tts.flush_animations() )
-                animatedgraph.color_edge(src, dst, edgeMarkColor)
-                
                 tts.say(f"Adding edge ({src}, {dst}) as part of the spanning tree.")
-                
+                animation_steps.append( animatedgraph.flush_animations() +tts.flush_animations() )
                 
                 vertex = edge[0]
                 if vertex not in mark:
-                    type = "vertexcolor"
-                    color = [1.,0.,0.,0.6]
-                    ahhh = {"applyon":"G", "data": {"type": type, "vertex": vertex, "color": color}}
-                    tts.say(f"Marking {vertex} as reached.")
                     mark[vertex] = True
-                    animation_steps.append( [ ahhh ] + tts.flush_animations() )
+        
+                    animatedgraph.color_vertex(vertex, vertexMarkColor)
+                    tts.say(f"Marking {vertex} as reached.")
                     
                 vertex = edge[1]
                 if vertex not in mark:
-                    type = "vertexcolor"
-                    color = [1.,0.,0.,0.6]
-                    ahhh = {"applyon":"G", "data": {"type": type, "vertex": vertex, "color": color}}
+                    animatedgraph.color_vertex(vertex, vertexMarkColor)
                     tts.say(f"Marking {vertex} as reached.")
                     mark[vertex] = True
-                    animation_steps.append( [ ahhh] + tts.flush_animations() )
-
+                    
+                animation_steps.append( animatedgraph.flush_animations() + tts.flush_animations() )
+                    
+                    
         #print (animation_steps)
 
         return animation_steps
