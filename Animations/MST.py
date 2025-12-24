@@ -4,7 +4,8 @@ from typing import override
 from networkx.algorithms import tree
 import json
 import sys
-from TTSanimation import * 
+from TTSanimation import *
+from NetworkXGraph import * 
 
 #Helper function used to randomly populate a graph's edges and nodes. 
 def randomEdgeGen(vCount: int, edgesArr: list, degree: int = 1):
@@ -66,7 +67,8 @@ def makegraph():
         return sceneNXGraph
 
 
-def make_animation(sceneNXGraph, tts: TTSanimation):
+def make_animation(animatedgraph: NetworkXGraph, tts: TTSanimation):
+        sceneNXGraph = animatedgraph.nxgraph #treat as read only
         weightedEdgesArr = [(edge[0], edge[1], sceneNXGraph.edges[edge]["weight"]) for edge in sceneNXGraph.edges()]
 
        
@@ -81,17 +83,21 @@ def make_animation(sceneNXGraph, tts: TTSanimation):
         tts.say(f"Marking {mstEdges[0][0]} as initial vertex reached.")
         mark[mstEdges[0][0]] = True
         animation_steps.append( [ {"applyon":"G", "data": {"type": "vertexcolor", "vertex":mstEdges[0][0], "color":[1.,0.,0.,0.6]} }] + tts.flush_animations() )
+        edgeMarkColor = [0.,1.,0.,1.]
+
         for edge in mstEdges:
-                type = "edgecolor"
                 if(edge[0], edge[1]) in sceneNXGraph.edges: 
                         temp = (edge[0], edge[1])
                 else:
                         temp = (edge[1], edge[0])
                 src = temp[0]
                 dst = temp[1]
-                color = [0.,1.,0.,1.]
+                
+                animatedgraph.color_edge(src, dst, edgeMarkColor)
+                animation_steps.append( animatedgraph.flush_animations() +tts.flush_animations() )
+                animatedgraph.color_edge(src, dst, edgeMarkColor)
+                
                 tts.say(f"Adding edge ({src}, {dst}) as part of the spanning tree.")
-                animation_steps.append( [ {"applyon": "G", "data": {"type": type, "src": src, "dst":dst, "color": color}} ] +tts.flush_animations() )
                 
                 
                 vertex = edge[0]
@@ -121,11 +127,14 @@ if __name__ == "__main__":
     my_graph = makegraph()
     tts = TTSanimation("tts")
 
-    animation = make_animation(my_graph, tts)
+    animated_graph = NetworkXGraph("G", my_graph)
 
+    animation = make_animation(animated_graph, tts)
+    
     initial_state = {}
     
-    initial_state["G"] = { "type": "nx", "data": nx.node_link_data((my_graph))}
+    #initial_state["G"] = { "type": "nx", "data": nx.node_link_data((my_graph))}
+    initial_state["G"] = animated_graph.initial()
     initial_state[tts.name] = tts.initial()
     
     data = { "initial": initial_state,
