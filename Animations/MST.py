@@ -4,6 +4,7 @@ from typing import override
 from networkx.algorithms import tree
 import json
 import sys
+from TTSanimation import * 
 
 #Helper function used to randomly populate a graph's edges and nodes. 
 def randomEdgeGen(vCount: int, edgesArr: list, degree: int = 1):
@@ -32,6 +33,17 @@ def makegraph():
             6:(-3.5,0,0),
             7:(3.5,0,0)
         }
+
+        #smaller graph
+        vCount = 4
+        pos = {
+            0:(0,3.5,0),
+            1:(-1.5,1.5,0),
+            2:(1,1.5,0),
+            3:(-1.5,-1.5,0),
+            4:(1,-1.5,0),
+        }
+
         verticesArr = [i for i in range(vCount)]
         edgesArr = []
         randomEdgeGen(vCount, edgesArr, 2)
@@ -57,7 +69,9 @@ def makegraph():
 def make_animation(sceneNXGraph):
         weightedEdgesArr = [(edge[0], edge[1], sceneNXGraph.edges[edge]["weight"]) for edge in sceneNXGraph.edges()]
 
-        #Calculate minnimum spanning tree of the graph using Prim's algorithm.
+        tts = TTSanimation("tts")
+        
+        #Calculate minimum spanning tree of the graph using Prim's algorithm.
         mstGraph = nx.Graph() #Duplicate graph of sceneNXGraph. Used to calculate minnimum spanning tree.
         mstGraph.add_nodes_from([v for v in sceneNXGraph.nodes])
         mstGraph.add_weighted_edges_from(weightedEdgesArr)
@@ -65,9 +79,9 @@ def make_animation(sceneNXGraph):
         mstEdges = list(mst)
         animation_steps = []
         mark = {}
-        tts0 = {"applyon":"tts", "data":{"type":"say", "text": f"Marking {mstEdges[0][0]} as initial vertex reached."}}
+        tts.say(f"Marking {mstEdges[0][0]} as initial vertex reached.")
         mark[mstEdges[0][0]] = True
-        animation_steps.append( [ {"applyon":"G", "data": {"type": "vertexcolor", "vertex":mstEdges[0][0], "color":[1.,0.,0.,0.6]} }, tts0] )
+        animation_steps.append( [ {"applyon":"G", "data": {"type": "vertexcolor", "vertex":mstEdges[0][0], "color":[1.,0.,0.,0.6]} }] + tts.flush_animations() )
         for edge in mstEdges:
                 type = "edgecolor"
                 if(edge[0], edge[1]) in sceneNXGraph.edges: 
@@ -77,8 +91,8 @@ def make_animation(sceneNXGraph):
                 src = temp[0]
                 dst = temp[1]
                 color = [0.,1.,0.,1.]
-                tts1 = {"applyon":"tts", "data":{"type":"say", "text": f"Adding edge ({src}, {dst}) as part of the spanning tree."}}
-                animation_steps.append( [ {"applyon": "G", "data": {"type": type, "src": src, "dst":dst, "color": color}} , tts1] )
+                tts.say(f"Adding edge ({src}, {dst}) as part of the spanning tree.")
+                animation_steps.append( [ {"applyon": "G", "data": {"type": type, "src": src, "dst":dst, "color": color}} ] +tts.flush_animations() )
                 
                 
                 vertex = edge[0]
@@ -86,18 +100,18 @@ def make_animation(sceneNXGraph):
                     type = "vertexcolor"
                     color = [1.,0.,0.,0.6]
                     ahhh = {"applyon":"G", "data": {"type": type, "vertex": vertex, "color": color}}
-                    tts2 = {"applyon":"tts", "data":{"type":"say", "text": f"Marking {vertex} as reached."}}
+                    tts.say(f"Marking {vertex} as reached.")
                     mark[vertex] = True
-                    animation_steps.append( [ ahhh, tts2] )
+                    animation_steps.append( [ ahhh ] + tts.flush_animations() )
                     
                 vertex = edge[1]
                 if vertex not in mark:
                     type = "vertexcolor"
                     color = [1.,0.,0.,0.6]
                     ahhh = {"applyon":"G", "data": {"type": type, "vertex": vertex, "color": color}}
-                    tts2 = {"applyon":"tts", "data":{"type":"say", "text": f"Marking {vertex} as reached."}}
+                    tts.say(f"Marking {vertex} as reached.")
                     mark[vertex] = True
-                    animation_steps.append( [ ahhh, tts2] )
+                    animation_steps.append( [ ahhh] + tts.flush_animations() )
 
         #print (animation_steps)
 

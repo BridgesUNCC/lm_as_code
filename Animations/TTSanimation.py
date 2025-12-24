@@ -1,0 +1,14 @@
+from AnimatedObject import *
+
+class TTSanimation(AnimatedObject):
+    
+    def initial(self):
+        ret = super().initial()
+        return ret
+
+    def say(self, text: str):
+        stuff = self.base_animation_step()
+        stuff["data"] = {"type":"say", "text": text}
+                
+        self.animations.append(stuff)
+        
