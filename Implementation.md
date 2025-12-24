@@ -4,7 +4,7 @@ The architecture of the project is built out of two main components.
 
 The animations are written by the end-user. They are written using an
 Animation library. That animation library will define components like
-Graphs, TTS, Arrays, or what not. When the animation code is run,
+Graphs, TTS, Arrays, or whatnot. When the animation code is run,
 it outputs a description of the animation encoded in a JSON format.
 
 That JSON description is given to the Renderer. It will parse the JSON
@@ -12,7 +12,7 @@ and generate the different frames of the animation using Manim for most
 of the visual elements and with coqui-ai/TTS for the voice
 generation. It outputs a video.
 
-### Why separate in two?
+### Why separate into two?
 
 We separate into two components for multiple reasons:
 
@@ -105,13 +105,16 @@ object in their initial state and build mobjects. These mobjects it
 creates are all inherited from `AnimatedObject` (the renderer version
 of the object).
 
-Note that anything that renders in manim is a mobject,
-including groups of things. So in a graph, a vertex is a mobject, its
-label is a mobject, and there is probably a group that contains
-both. (It's a bit like SVG in a way.)
+Note that anything that renders in manim is a mobject, including
+groups of things. So in a graph, a vertex is a mobject, its label is a
+mobject, and there is probably a group that contains both. (It's a bit
+like SVG in a way.)
 
-
-
+These animated object will be passed each thing that happen to them
+through the animate function. That function will do the internal
+changes that the animation cause and will return a list of manim
+Animation. They are things like "move this", "change the color of
+that", "fade this in" type of operations.
 
 
 ### TTS
@@ -122,15 +125,16 @@ wav file for the text that is being said. And that sound is then
 played.
 
 Except there is no good way in Manim to do that within the animation
-framework. So the solution for synchornization to work is to play the
+framework. So the solution for synchronization to work is to play the
 sound and insert a manim wait animation object. 
 
 Also for stupid caching reasons, a fake text is inserted but made
 invisible to avoid breaking caching. That means that any animation (a
 video file in manim internal structure) that uses TTS can't be cached
-and has to be regenerated. There is probably a work around; but
-haven't found one yet.
+and has to be regenerated. There is probably a workaround; but haven't
+found one yet.
 
-This is why (somehow) you can't play two sounds at teh same time. So
-in particular, you can't play 2 TTS messages.x
+This is why (somehow) you can't play two sounds at the same time. So
+in particular, you can't play 2 TTS messages.
+
 
