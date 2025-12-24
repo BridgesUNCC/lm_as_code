@@ -9,6 +9,7 @@ class NetworkXGraph(AnimatedObject):
     sceneNXGraph = None
     sceneGraph = None
     edgeLabels = None
+    vertexLabels = None
     
     def __init__ (self, renderer, data):
         '''
@@ -27,10 +28,18 @@ class NetworkXGraph(AnimatedObject):
         
         self.sceneGraph = Graph.from_networkx(self.sceneNXGraph, 
                                          layout = the_pos, 
-                                         labels = True, #Vertex labels
-                                         label_fill_color = BLUE,
-                                         layout_scale = 4.0, 
+                                         labels = False, #managing labels manually
+                                         layout_scale = 4.0,
+                                         vertex_config = {"radius": 0.3, "color": BLUE},
                                          edge_type = DashedLine)
+
+        self.vertexLabels = VGroup()
+        for v in self.sceneNXGraph:
+            label = Text(str(v)).scale(0.75)
+            center = the_pos[v]
+            label.move_to(center)
+            self.vertexLabels.add(label)
+        
         
         #Weight population
         weightedEdgesArr = [(edge[0], edge[1], self.sceneNXGraph.edges[edge]["weight"]) for edge in self.sceneNXGraph.edges()]
@@ -47,7 +56,7 @@ class NetworkXGraph(AnimatedObject):
             label.move_to(center)
             self.edgeLabels.add(label)
             
-        self.renderer.add(self.sceneGraph, self.edgeLabels)
+        self.renderer.add(self.sceneGraph, self.edgeLabels, self.vertexLabels)
 
     def animate(self, action:dict) -> list[Animation]:
         '''

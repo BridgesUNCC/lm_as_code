@@ -85,7 +85,9 @@ class Renderer(Scene):
                 
   
 if __name__ == '__main__':
-    #config.disable_caching=True
+    config.pixel_height = 1080
+    config.pixel_width = 1920
+    
     scene = Renderer()
     scene.datafile = sys.argv[1]
     scene.render() # That's it!
