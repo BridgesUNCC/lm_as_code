@@ -46,7 +46,7 @@ def makegraph():
 
         verticesArr = [i for i in range(vCount)]
         edgesArr = []
-        randomEdgeGen(vCount, edgesArr, 2)
+        randomEdgeGen(vCount, edgesArr, 1)
         
         #Scene graph creation
         sceneNXGraph = nx.Graph()
@@ -66,11 +66,10 @@ def makegraph():
         return sceneNXGraph
 
 
-def make_animation(sceneNXGraph):
+def make_animation(sceneNXGraph, tts: TTSanimation):
         weightedEdgesArr = [(edge[0], edge[1], sceneNXGraph.edges[edge]["weight"]) for edge in sceneNXGraph.edges()]
 
-        tts = TTSanimation("tts")
-        
+       
         #Calculate minimum spanning tree of the graph using Prim's algorithm.
         mstGraph = nx.Graph() #Duplicate graph of sceneNXGraph. Used to calculate minnimum spanning tree.
         mstGraph.add_nodes_from([v for v in sceneNXGraph.nodes])
@@ -120,12 +119,14 @@ def make_animation(sceneNXGraph):
 
 if __name__ == "__main__":
     my_graph = makegraph()
-    animation = make_animation(my_graph)
+    tts = TTSanimation("tts")
+
+    animation = make_animation(my_graph, tts)
 
     initial_state = {}
     
     initial_state["G"] = { "type": "nx", "data": nx.node_link_data((my_graph))}
-    initial_state["tts"] = {"type": "tts", "data":{}}
+    initial_state[tts.name] = tts.initial()
     
     data = { "initial": initial_state,
             "animation": animation}

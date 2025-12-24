@@ -4,6 +4,7 @@ class TTSanimation(AnimatedObject):
     
     def initial(self):
         ret = super().initial()
+        ret ["type"] = "tts"
         return ret
 
     def say(self, text: str):

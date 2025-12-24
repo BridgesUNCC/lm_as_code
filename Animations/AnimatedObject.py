@@ -12,7 +12,7 @@ class AnimatedObject:
         '''
         return the object representing the initial state of the animated object
         '''
-        return {"name": self.name}
+        return {"name": self.name, "data": {}}
 
     def base_animation_step(self) -> dict:
         
