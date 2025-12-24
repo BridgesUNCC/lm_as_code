@@ -1,4 +1,4 @@
-from AnimatedObject import *
+from Animations.AnimatedObject import *
 
 class TTSanimation(AnimatedObject):
     

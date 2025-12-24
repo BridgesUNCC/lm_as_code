@@ -1,4 +1,4 @@
-from AnimatedObject import *
+from Animations.AnimatedObject import *
 import copy
 import networkx as nx
 

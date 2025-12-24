@@ -4,8 +4,8 @@ from typing import override
 from networkx.algorithms import tree
 import json
 import sys
-from TTSanimation import *
-from NetworkXGraph import * 
+from Animations.TTSanimation import *
+from Animations.NetworkXGraph import * 
 
 #Helper function used to randomly populate a graph's edges and nodes. 
 def randomEdgeGen(vCount: int, edgesArr: list, degree: int = 1):
