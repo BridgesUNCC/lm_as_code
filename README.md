@@ -24,7 +24,7 @@ Then there is a renderer that will take that JSON and produce a video.
 ## Running
 
 ```bash
-python3 Animations/MST.py myMST.json
+python3 MST.py myMST.json
 ```
 
 ## Rendering
@@ -33,3 +33,7 @@ python3 Animations/MST.py myMST.json
 python3 Renderer/Renderer.py myMST.json
 ls media/videos/*/Renderer.mp4
 ```
+
+## Support and Implementation
+
+See Implementation.md
