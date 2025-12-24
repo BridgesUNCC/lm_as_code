@@ -95,8 +95,42 @@ coloring edges.
 
 ### TTS
 
-currently only support a single operation `say`ing a piece of text.
+Currently only supports a single operation `say`ing a piece of text.
 
 ## Renderer
 
+The renderer is the more complex piece of software. It needs to
+interact with manim to make the thing work. It deserialize first the
+object in their initial state and build mobjects. These mobjects it
+creates are all inherited from `AnimatedObject` (the renderer version
+of the object).
+
+Note that anything that renders in manim is a mobject,
+including groups of things. So in a graph, a vertex is a mobject, its
+label is a mobject, and there is probably a group that contains
+both. (It's a bit like SVG in a way.)
+
+
+
+
+
+### TTS
+
+TTS is a bit complicated. It turns out that manim has minimal support
+for sound processing. So the TTS object uses coqui-ai/TTS to generate
+wav file for the text that is being said. And that sound is then
+played.
+
+Except there is no good way in Manim to do that within the animation
+framework. So the solution for synchornization to work is to play the
+sound and insert a manim wait animation object. 
+
+Also for stupid caching reasons, a fake text is inserted but made
+invisible to avoid breaking caching. That means that any animation (a
+video file in manim internal structure) that uses TTS can't be cached
+and has to be regenerated. There is probably a work around; but
+haven't found one yet.
+
+This is why (somehow) you can't play two sounds at teh same time. So
+in particular, you can't play 2 TTS messages.x
 
