@@ -53,6 +53,9 @@ if __name__ == "__main__":
     #actually build the animation
     animated_graph.color_vertex(2, [1.,0.,0.,1.])
     my_master_anim.step()
+
+    animated_graph.color_edge(2, 3, [1.,0.,0.,1.])
+    my_master_anim.step()
     
     
 
