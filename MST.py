@@ -6,6 +6,8 @@ import json
 import sys
 from Animations.TTSanimation import *
 from Animations.NetworkXGraph import * 
+from Animations.MasterAnimation import *
+
 
 #Helper function used to randomly populate a graph's edges and nodes. 
 def randomEdgeGen(vCount: int, edgesArr: list, degree: int = 1):
@@ -67,13 +69,12 @@ def makegraph():
         return sceneNXGraph
 
 
-def make_animation(animatedgraph: NetworkXGraph, tts: TTSanimation):
+def make_animation(animatedgraph: NetworkXGraph, tts: TTSanimation, ma: MasterAnimation):
         sceneNXGraph = animatedgraph.nxgraph #treat as read only
         weightedEdgesArr = [(edge[0], edge[1], sceneNXGraph.edges[edge]["weight"]) for edge in sceneNXGraph.edges()]
 
         edgeMarkColor = [0.,1.,0.,1.]
         vertexMarkColor = [1.,0.,0.,0.6]
-        
        
         #Calculate minimum spanning tree of the graph using Prim's algorithm.
         mstGraph = nx.Graph() #Duplicate graph of sceneNXGraph. Used to calculate minnimum spanning tree.
@@ -86,10 +87,9 @@ def make_animation(animatedgraph: NetworkXGraph, tts: TTSanimation):
         animatedgraph.color_vertex(mstEdges[0][0], vertexMarkColor)
         tts.say(f"Marking {mstEdges[0][0]} as initial vertex reached.")
         mark[mstEdges[0][0]] = True
-        animation_steps.append(animatedgraph.flush_animations() + tts.flush_animations() )
+        ma.step()
 
 
-        
         for edge in mstEdges:
                 if(edge[0], edge[1]) in sceneNXGraph.edges: 
                         temp = (edge[0], edge[1])
@@ -100,7 +100,7 @@ def make_animation(animatedgraph: NetworkXGraph, tts: TTSanimation):
                 
                 animatedgraph.color_edge(src, dst, edgeMarkColor)
                 tts.say(f"Adding edge ({src}, {dst}) as part of the spanning tree.")
-                animation_steps.append( animatedgraph.flush_animations() +tts.flush_animations() )
+                ma.step()
                 
                 vertex = edge[0]
                 if vertex not in mark:
@@ -115,31 +115,28 @@ def make_animation(animatedgraph: NetworkXGraph, tts: TTSanimation):
                     tts.say(f"Marking {vertex} as reached.")
                     mark[vertex] = True
                     
-                animation_steps.append( animatedgraph.flush_animations() + tts.flush_animations() )
-                    
-                    
-        #print (animation_steps)
+                ma.step()
 
-        return animation_steps
 
 
 if __name__ == "__main__":
+    my_master_anim = MasterAnimation() #This is the main interface object
+
+    #set up the animation objects we need
     my_graph = makegraph()
     tts = TTSanimation("tts")
-
     animated_graph = NetworkXGraph("G", my_graph)
 
-    animation = make_animation(animated_graph, tts)
-    
-    initial_state = {}
-    
-    #initial_state["G"] = { "type": "nx", "data": nx.node_link_data((my_graph))}
-    initial_state["G"] = animated_graph.initial()
-    initial_state[tts.name] = tts.initial()
-    
-    data = { "initial": initial_state,
-            "animation": animation}
+    my_master_anim.addAnimatedObject("tts", tts)
+    my_master_anim.addAnimatedObject("G", animated_graph)
 
+    #actually build the animation
+    make_animation(animated_graph, tts, my_master_anim)
+    
+
+    # output
+    data = my_master_anim.complete_animation_object()
+    
     json_str = json.dumps(data, indent=2)
     with open(sys.argv[1], "w") as out:
         out.write(json_str)

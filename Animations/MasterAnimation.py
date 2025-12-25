@@ -1,4 +1,4 @@
-
+from Animations.AnimatedObject import AnimatedObject 
 
 class MasterAnimation:
     '''
@@ -13,7 +13,7 @@ class MasterAnimation:
         self.objects = {}
         self.anims = []
     
-    def addAnimatedObject(self, name: str, obj:AnimatedObject):
+    def addAnimatedObject(self, name: str, obj: AnimatedObject):
         #TODO check existing + exception
         #if name not str exception
         self.objects[name] = obj
@@ -28,22 +28,23 @@ class MasterAnimation:
         '''
         return the json that goes in the serialization for renderer
         '''
-        return anims
+        return self.anims
 
     def complete_animation_object(self):
         '''
         returns the json that is a complete animation object
         '''
         data = { "initial": self.initial(),
-                 "animation": self..animation()}
+                 "animation": self.animation()}
 
+        return data
 
     def step(self):
         '''
         call this for each step of the animation
         '''
         cur = []
-        for o in objects:
+        for o in self.objects:
             cur = cur + self.objects[o].flush_animations() # which function is inplace list append?
         
         self.anims.append(cur)
