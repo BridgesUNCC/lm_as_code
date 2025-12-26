@@ -51,4 +51,24 @@ class NetworkXGraph(AnimatedObject):
         #TODO: should record in the underlying networkx object?
         #TODO: clone the parameters?
         self.animations.append(stuff)
+
+    def add_vertex(self, vertex, pos=None, label=None):
+        '''
+
+        pos is 3d coordinate
+        '''
+        stuff = self.base_animation_step()
+        #TODO check for existence or exception
+        stuff["data"] = {"type":"addvertex",
+                         "vertex":vertex
+                         }
+        if pos:
+            stuff["data"]["pos"] = pos
+
+        if label:
+            stuff["data"]["label"] = label
         
+        #TODO: should record in the underlying networkx object?
+        #TODO: clone the parameters?
+        self.animations.append(stuff)
+
