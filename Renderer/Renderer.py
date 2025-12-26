@@ -80,7 +80,7 @@ class Renderer(Scene):
             for action in animation_step:
                 applyon = action["applyon"] #TODO check for string
                 data = action["data"]
-                the_actions.extend(self.objects[applyon].animate(data))
+                the_actions.extend(self.objects[applyon].animate(data)) #should catch exception and generate easier to interpret error message
             self.play (the_actions)
                 
   

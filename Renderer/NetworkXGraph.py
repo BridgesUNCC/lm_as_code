@@ -94,5 +94,13 @@ class NetworkXGraph(AnimatedObject):
         if action["type"] == "vertexcolor":
             return [ self.sceneGraph.vertices[action["vertex"]].animate.set_color(ManimColor(action["color"])) ]
 
+        if action["type"] == "vertexcolor":
+            return [ self.sceneGraph.vertices[action["vertex"]].animate.set_color(ManimColor(action["color"])) ]
+
+        if action["type"] == "addedge":
+            src = action["src"]
+            dst = action["dst"]
+            return [ self.sceneGraph.animate.add_edges((src, dst)) ]
+
         
-        AnimatedObject.animate(self, action)
+        return AnimatedObject.animate(self, action)

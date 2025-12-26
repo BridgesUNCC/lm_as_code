@@ -8,8 +8,7 @@ from Animations.MasterAnimation import *
 
 
 def makegraph():
-
-        #smaller graph
+        #smal graph
         vCount = 4
         pos = {
             0:(0,3.5,0),
@@ -28,7 +27,6 @@ def makegraph():
         sceneNXGraph.add_edges_from(edgesArr)
 
         for v in sceneNXGraph:
-                #print (v, pos[v])
                 nx.set_node_attributes(sceneNXGraph, {v: {"pos": pos[v]}}) #G[v]["pos"] is a 3d position tuple
 
         
@@ -57,6 +55,8 @@ if __name__ == "__main__":
     animated_graph.color_edge(2, 3, [1.,0.,0.,1.])
     my_master_anim.step()
     
+    animated_graph.add_edge(2, 4)
+    my_master_anim.step()
     
 
     # output

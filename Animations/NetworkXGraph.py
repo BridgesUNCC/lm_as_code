@@ -41,3 +41,14 @@ class NetworkXGraph(AnimatedObject):
         #TODO: clone the parameters?
         self.animations.append(stuff)
         
+    def add_edge(self, src, dst):
+        stuff = self.base_animation_step()
+        #TODO check for existence or exception
+        stuff["data"] = {"type":"addedge",
+                         "src":src,
+                         "dst":dst
+                         }
+        #TODO: should record in the underlying networkx object?
+        #TODO: clone the parameters?
+        self.animations.append(stuff)
+        
