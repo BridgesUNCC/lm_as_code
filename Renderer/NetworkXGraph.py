@@ -134,10 +134,10 @@ class NetworkXGraph(AnimatedObject):
             rets = []
             
             v = action["vertex"]
-            position = [0.,0.,.0]
+            position = {v: [0., 0., .0]}
             if "pos" in action:
                 position = {v: action["pos"]}
-            self.vertexPositions[v] = pos
+            self.vertexPositions[v] = position
                 
             rets.append(self.sceneGraph.animate.add_vertices(v, positions=position))
                 
