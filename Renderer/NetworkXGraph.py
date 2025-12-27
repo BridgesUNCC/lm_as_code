@@ -103,8 +103,6 @@ class NetworkXGraph(AnimatedObject):
         if action["type"] == "vertexcolor":
             return [ self.sceneGraph.vertices[action["vertex"]].animate.set_color(ManimColor(action["color"])) ]
 
-        if action["type"] == "vertexcolor":
-            return [ self.sceneGraph.vertices[action["vertex"]].animate.set_color(ManimColor(action["color"])) ]
 
         if action["type"] == "addedge":
             src = action["src"]
@@ -136,10 +134,11 @@ class NetworkXGraph(AnimatedObject):
             rets = []
             
             v = action["vertex"]
-            position = None
+            position = [0.,0.,.0]
             if "pos" in action:
                 position = {v: action["pos"]}
-
+            self.vertexPositions[v] = pos
+                
             rets.append(self.sceneGraph.animate.add_vertices(v, positions=position))
                 
             if "label" in action: 
@@ -151,6 +150,7 @@ class NetworkXGraph(AnimatedObject):
                 label.move_to(center)
                 self.vertexLabels.add(label)
                 rets.append(Create(label))
+                self.vertexLabelsObjects[v] = label
 
             return rets
         
