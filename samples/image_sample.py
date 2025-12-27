@@ -10,11 +10,11 @@ from Animations.Image import *
 if __name__ == "__main__":
     my_master_anim = MasterAnimation() #This is the main interface object
 
-    my_img = Image("img", "img1.png")
+    my_img = Image("img", "samples/img1.png")
 
     my_master_anim.addAnimatedObject("img", my_img)
 
-    my_img.change_to("img2.png")
+    my_img.change_to("samples/img2.png")
 
     my_master_anim.step()
 
