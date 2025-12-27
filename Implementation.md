@@ -81,7 +81,7 @@ output the animation.
 In other words, if you want to group multiple animations, you only
 flush between groups.
 
-At the moment only 2 types of objects are defined:
+At the moment only few types of objects are defined:
 
 
 ### NetworkXGraph
@@ -140,6 +140,8 @@ and has to be regenerated. There is probably a workaround; but haven't
 found one yet.
 
 This is why (somehow) you can't play two sounds at the same time. So
-in particular, you can't play 2 TTS messages.
+in particular, you can't play 2 TTS messages. That means withing one
+animation step, you can only play one message. If you try to play
+more; there be dragons.
 
 
