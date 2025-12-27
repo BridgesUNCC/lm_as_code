@@ -91,7 +91,7 @@ the object can be given position in order to control where on the
 frame the vertices will be.
 
 The object currently only supports few operations, coloring vertices, and
-coloring edges, adding vertices and edges, and settign vertex positions
+coloring edges, adding vertices and edges, and setting vertex positions
 
 ### TTS
 
