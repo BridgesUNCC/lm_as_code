@@ -90,7 +90,8 @@ class NetworkXGraph(AnimatedObject):
         }
         if there is no action["vertex"] vertex in the graph, an exception will be thrown.
 
-
+        TODO: there are more ops; not documented yet
+        
         TODO: should detect malformed dictionaries and throw exception if malformed
         '''
         if action["type"] == "edgecolor":
