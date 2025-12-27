@@ -90,12 +90,17 @@ It is constructed by passing a NetworkX graph object to it. Note that
 the object can be given position in order to control where on the
 frame the vertices will be.
 
-The object currently only supports 2 operations, coloring vertices, and
-coloring edges.
+The object currently only supports few operations, coloring vertices, and
+coloring edges, adding vertices and edges, and settign vertex positions
 
 ### TTS
 
 Currently only supports a single operation `say`ing a piece of text.
+
+### Image
+
+Lets you put a static image. Any manim image format works. Bitmap
+formats really. For instance `.jpg`, and `.png`.
 
 ## Renderer
 

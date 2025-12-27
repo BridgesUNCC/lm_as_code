@@ -24,8 +24,10 @@ Then there is a renderer that will take that JSON and produce a video.
 ## Running
 
 ```bash
-python3 MST.py myMST.json
+PYTHONPATH=. python3 samples/MST.py myMST.json
 ```
+
+There are more sample codes in `samples/`
 
 ## Rendering
 
