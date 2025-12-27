@@ -8,8 +8,14 @@ from networkx.algorithms import tree
 class NetworkXGraph(AnimatedObject):
     sceneNXGraph = None
     sceneGraph = None
-    edgeLabels = None
-    vertexLabels = None
+
+    edgeLabels = None #label VGroup
+    edgeLabelsObjects = None # a map of vertices to the label object
+    
+    vertexPositions = None
+
+    vertexLabels = None #label VGroup
+    vertexLabelsObjects = None # a map of vertices to the label object
     
     def __init__ (self, renderer, data):
         '''
@@ -24,21 +30,22 @@ class NetworkXGraph(AnimatedObject):
         AnimatedObject.__init__(self, renderer)
         self.sceneNXGraph = nx.node_link_graph(data)
 
-        the_pos = {v: self.sceneNXGraph.nodes[v]["pos"] for v in self.sceneNXGraph}
+        self.vertexPositions = {v: self.sceneNXGraph.nodes[v]["pos"] for v in self.sceneNXGraph}
         
         self.sceneGraph = Graph.from_networkx(self.sceneNXGraph, 
-                                         layout = the_pos, 
+                                         layout = self.vertexPositions, 
                                          labels = False, #managing labels manually
                                          layout_scale = 4.0,
-                                         vertex_config = {"radius": 0.3, "color": BLUE},
-                                         edge_type = DashedLine)
+                                         vertex_config = {"radius": 0.3, "color": BLUE})
 
         self.vertexLabels = VGroup()
+        self.vertexLabelsObjects  = {}
         for v in self.sceneNXGraph:
             label = Text(str(v)).scale(0.75)
-            center = the_pos[v]
+            center = self.vertexPositions[v]
             label.move_to(center)
             self.vertexLabels.add(label)
+            self.vertexLabelsObjects[v] = label
         
         
         #Weight population
@@ -46,6 +53,7 @@ class NetworkXGraph(AnimatedObject):
 
         
         #Weight label mobject creation & positioning.
+        self.edgeLabelsObjects = {}
         self.edgeLabels = VGroup()
         for wEdge in weightedEdgesArr:
             edge = (wEdge[0],wEdge[1])
@@ -55,6 +63,7 @@ class NetworkXGraph(AnimatedObject):
             center = edgeLine.get_center()
             label.move_to(center)
             self.edgeLabels.add(label)
+            self.edgeLabelsObjects[edge] = label
             
         self.renderer.add(self.sceneGraph, self.edgeLabels, self.vertexLabels)
 
@@ -104,8 +113,24 @@ class NetworkXGraph(AnimatedObject):
 
         if action["type"] == "setvertexlocation":
             v = action["vertex"]
-            pos = action["pos"] # TODO: needs to shift the label too (vertex and edge)
-            return [ self.sceneGraph.vertices[v].animate.move_to(pos) ]
+            pos = action["pos"] 
+            #TODO: check types
+            self.vertexPositions[v] = pos
+            rets = []
+            rets.append(self.sceneGraph.vertices[v].animate.move_to(pos) )
+            # shift vertex label if exists
+            if v in self.vertexLabelsObjects:
+                label = self.vertexLabelsObjects[v]
+                rets.append(label.animate.move_to(pos))
+            # shift edge label (if exists)
+            for e in self.edgeLabelsObjects:
+                if e[0] == v or e[1] == v: #not sure we can do better becasue some graph undirected
+                    edgeLine = self.sceneGraph.edges[e]
+                    destination = [ (self.vertexPositions[e[0]][i] + self.vertexPositions[e[1]][i]) / 2.  for i in range (3)]
+                    moveanim = self.edgeLabelsObjects[e].animate.move_to(destination)
+                    rets.append(moveanim)
+                    
+            return rets
 
         if action["type"] == "addvertex":
             rets = []
