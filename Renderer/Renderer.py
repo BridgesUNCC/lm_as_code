@@ -6,6 +6,7 @@ import sys
 from AnimatedObject import AnimatedObject
 from TTSanimation import TTSanimation
 from NetworkXGraph import NetworkXGraph
+from Image import ImageAnimation
 
 
         
@@ -69,6 +70,9 @@ class Renderer(Scene):
 
                 if value["type"] == "tts":
                     self.objects[key] = TTSanimation(self, value["data"])
+
+                if value["type"] == "image":
+                    self.objects[key] = ImageAnimation(self, value["data"])
 
                     
             self.animation_steps = data["animation"]
