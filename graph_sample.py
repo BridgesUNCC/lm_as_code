@@ -54,9 +54,16 @@ if __name__ == "__main__":
 
     animated_graph.add_vertex(6)
     my_master_anim.step()
+
+    animated_graph.set_vertex_location(6, [2.5, -2.5, 1.])
+    my_master_anim.step()
     
     animated_graph.add_vertex(7,[-2.5, 0, 0], "foobar")
     my_master_anim.step()
+
+    animated_graph.set_vertex_location(2, [-2.5, -2.5, 1.])
+    my_master_anim.step()
+
     
     animated_graph.color_edge(2, 3, [1.,0.,0.,1.])
     my_master_anim.step()

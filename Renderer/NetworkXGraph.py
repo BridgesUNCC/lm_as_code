@@ -102,6 +102,11 @@ class NetworkXGraph(AnimatedObject):
             dst = action["dst"]
             return [ self.sceneGraph.animate.add_edges((src, dst)) ]
 
+        if action["type"] == "setvertexlocation":
+            v = action["vertex"]
+            pos = action["pos"] # TODO: needs to shift the label too (vertex and edge)
+            return [ self.sceneGraph.vertices[v].animate.move_to(pos) ]
+
         if action["type"] == "addvertex":
             rets = []
             
@@ -123,6 +128,7 @@ class NetworkXGraph(AnimatedObject):
                 rets.append(Create(label))
 
             return rets
+        
 
         
         return AnimatedObject.animate(self, action)

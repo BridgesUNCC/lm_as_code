@@ -54,7 +54,6 @@ class NetworkXGraph(AnimatedObject):
 
     def add_vertex(self, vertex, pos=None, label=None):
         '''
-
         pos is 3d coordinate
         '''
         stuff = self.base_animation_step()
@@ -72,3 +71,16 @@ class NetworkXGraph(AnimatedObject):
         #TODO: clone the parameters?
         self.animations.append(stuff)
 
+    def set_vertex_location(self, vertex, pos):
+        '''
+        pos is 3d coordinate
+        '''
+        stuff = self.base_animation_step()
+        #TODO check for existence or exception
+        stuff["data"] = {"type": "setvertexlocation",
+                         "vertex": vertex,
+                         "pos": pos}
+        
+        #TODO: should record in the underlying networkx object?
+        #TODO: clone the parameters?
+        self.animations.append(stuff)
