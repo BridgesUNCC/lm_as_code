@@ -12,11 +12,15 @@ class NetworkXGraph(AnimatedObject):
     edgeLabels = None #label VGroup
     edgeLabelsObjects = None # a map of vertices to the label object
     
-    vertexPositions = None
+    vertexPositions = None #a map of vertices to 3d coordinate
 
     vertexLabels = None #label VGroup
     vertexLabelsObjects = None # a map of vertices to the label object
-    
+
+    def _edgeLabelLocation(self, u, v):
+        return [ (self.vertexPositions[u][i] + self.vertexPositions[v][i]) / 2.  for i in range (3)]        
+
+   
     def __init__ (self, renderer, data):
         '''
         data is a dict representation of a networkx graph as exported by networkx.node_link_data
@@ -107,7 +111,16 @@ class NetworkXGraph(AnimatedObject):
         if action["type"] == "addedge":
             src = action["src"]
             dst = action["dst"]
-            return [ self.sceneGraph.animate.add_edges((src, dst)) ]
+            rets = [ self.sceneGraph.animate.add_edges((src, dst)) ]
+            if "label" in action:
+                label = Text(str(action["label"])).scale(0.75)
+                p = self._edgeLabelLocation(src, dst)
+                label.move_to(p)
+                self.edgeLabels.add(label)
+                rets.append(Create(label))
+                self.edgeLabelsObjects[(src,dst)] = label
+                
+            return rets
 
         if action["type"] == "setvertexlocation":
             v = action["vertex"]
@@ -124,7 +137,7 @@ class NetworkXGraph(AnimatedObject):
             for e in self.edgeLabelsObjects:
                 if e[0] == v or e[1] == v: #not sure we can do better becasue some graph undirected
                     edgeLine = self.sceneGraph.edges[e]
-                    destination = [ (self.vertexPositions[e[0]][i] + self.vertexPositions[e[1]][i]) / 2.  for i in range (3)]
+                    destination = self._edgeLabelLocation(e[0], e[1])
                     moveanim = self.edgeLabelsObjects[e].animate.move_to(destination)
                     rets.append(moveanim)
                     
