@@ -71,6 +71,80 @@ class NetworkXGraph(AnimatedObject):
             
         self.renderer.add(self.sceneGraph, self.edgeLabels, self.vertexLabels)
 
+    def _animate_edgecolor(self, action:dict) -> list[Animation]:
+        edge=None
+        try:
+            temp = (action["src"], action["dst"])
+            edge = self.sceneGraph.edges[temp]
+        except KeyError as e: #this is normal in undirected graph
+            temp = (action["dst"], action["src"])
+            edge = self.sceneGraph.edges[temp]
+            
+        return [ edge.animate.set_color(ManimColor(action["color"])) ]
+
+    def _animate_vertexcolor(self, action:dict) -> list[Animation]:
+        return [ self.sceneGraph.vertices[action["vertex"]].animate.set_color(ManimColor(action["color"])) ]    
+
+    def _animate_addedge(self, action:dict) -> list[Animation]:
+        src = action["src"]
+        dst = action["dst"]
+        rets = [ self.sceneGraph.animate.add_edges((src, dst)) ]
+        if "label" in action:
+            label = Text(str(action["label"])).scale(0.75)
+            p = self._edgeLabelLocation(src, dst)
+            label.move_to(p)
+            self.edgeLabels.add(label)
+            rets.append(Create(label))
+            self.edgeLabelsObjects[(src,dst)] = label
+                
+        return rets
+
+    def _animate_setvertexlocation(self, action:dict) -> list[Animation]:
+        v = action["vertex"]
+        pos = action["pos"] 
+        #TODO: check types
+        self.vertexPositions[v] = pos
+        rets = []
+        rets.append(self.sceneGraph.vertices[v].animate.move_to(pos) )
+        # shift vertex label if exists
+        if v in self.vertexLabelsObjects:
+            label = self.vertexLabelsObjects[v]
+            rets.append(label.animate.move_to(pos))
+        # shift edge label (if exists)
+        for e in self.edgeLabelsObjects:
+            if e[0] == v or e[1] == v: #not sure we can do better becasue some graph undirected
+                edgeLine = self.sceneGraph.edges[e]
+                destination = self._edgeLabelLocation(e[0], e[1])
+                moveanim = self.edgeLabelsObjects[e].animate.move_to(destination)
+                rets.append(moveanim)
+                    
+        return rets
+
+    def _animate_addvertex(self, action:dict) -> list[Animation]:
+        rets = []
+            
+        v = action["vertex"]
+        position = {v: [0., 0., .0]}
+        if "pos" in action:
+            position = {v: action["pos"]}
+        self.vertexPositions[v] = position
+                
+        rets.append(self.sceneGraph.animate.add_vertices(v, positions=position))
+                
+        if "label" in action: 
+            #position?
+            label = Text(str(v)).scale(0.75)
+            center = [0,0,0]
+            if "pos" in action:
+                center = action["pos"]
+                label.move_to(center)
+            self.vertexLabels.add(label)
+            rets.append(Create(label))
+            self.vertexLabelsObjects[v] = label
+
+        return rets
+
+    
     def animate(self, action:dict) -> list[Animation]:
         '''
         NetworkXGraph supports the following actions:
@@ -95,79 +169,18 @@ class NetworkXGraph(AnimatedObject):
         TODO: should detect malformed dictionaries and throw exception if malformed
         '''
         if action["type"] == "edgecolor":
-            edge=None
-            try:
-                temp = (action["src"], action["dst"])
-                edge = self.sceneGraph.edges[temp]
-            except KeyError as e: #this is normal in undirected graph
-                temp = (action["dst"], action["src"])
-                edge = self.sceneGraph.edges[temp]
-                        
-            return [ edge.animate.set_color(ManimColor(action["color"])) ]
+            return self._animate_edgecolor(action)
         
         if action["type"] == "vertexcolor":
-            return [ self.sceneGraph.vertices[action["vertex"]].animate.set_color(ManimColor(action["color"])) ]
-
+            return self._animate_vertexcolor(action)
 
         if action["type"] == "addedge":
-            src = action["src"]
-            dst = action["dst"]
-            rets = [ self.sceneGraph.animate.add_edges((src, dst)) ]
-            if "label" in action:
-                label = Text(str(action["label"])).scale(0.75)
-                p = self._edgeLabelLocation(src, dst)
-                label.move_to(p)
-                self.edgeLabels.add(label)
-                rets.append(Create(label))
-                self.edgeLabelsObjects[(src,dst)] = label
-                
-            return rets
-
-        if action["type"] == "setvertexlocation":
-            v = action["vertex"]
-            pos = action["pos"] 
-            #TODO: check types
-            self.vertexPositions[v] = pos
-            rets = []
-            rets.append(self.sceneGraph.vertices[v].animate.move_to(pos) )
-            # shift vertex label if exists
-            if v in self.vertexLabelsObjects:
-                label = self.vertexLabelsObjects[v]
-                rets.append(label.animate.move_to(pos))
-            # shift edge label (if exists)
-            for e in self.edgeLabelsObjects:
-                if e[0] == v or e[1] == v: #not sure we can do better becasue some graph undirected
-                    edgeLine = self.sceneGraph.edges[e]
-                    destination = self._edgeLabelLocation(e[0], e[1])
-                    moveanim = self.edgeLabelsObjects[e].animate.move_to(destination)
-                    rets.append(moveanim)
-                    
-            return rets
-
-        if action["type"] == "addvertex":
-            rets = []
+            return self._animate_addedge(action)
             
-            v = action["vertex"]
-            position = {v: [0., 0., .0]}
-            if "pos" in action:
-                position = {v: action["pos"]}
-            self.vertexPositions[v] = position
-                
-            rets.append(self.sceneGraph.animate.add_vertices(v, positions=position))
-                
-            if "label" in action: 
-                #position?
-                label = Text(str(v)).scale(0.75)
-                center = [0,0,0]
-                if "pos" in action:
-                    center = action["pos"]
-                label.move_to(center)
-                self.vertexLabels.add(label)
-                rets.append(Create(label))
-                self.vertexLabelsObjects[v] = label
-
-            return rets
-        
-
+        if action["type"] == "setvertexlocation":
+            return self._animate_setvertexlocation(action)
+            
+        if action["type"] == "addvertex":
+            return self._animate_addvertex(action)
         
         return AnimatedObject.animate(self, action)
