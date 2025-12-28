@@ -72,6 +72,17 @@ class NetworkXGraph(AnimatedObject):
         self.renderer.add(self.sceneGraph, self.edgeLabels, self.vertexLabels)
 
     def _animate_edgecolor(self, action:dict) -> list[Animation]:
+        '''
+        here is what action should look like
+        {
+        "type": "edgecolor",
+        "src": the key of a vertex from the networkx graph the object was constructed with,
+        "dst": the key of a vertex from the networkx graph the object was constructed with,
+        "color": anything that can be used to construct a ManimColor object; usually a [r,g,b,a] float tuple
+        }
+        if there is no (action["src"],action["dst"]) edge in the graph, an exception will be thrown.
+
+        '''
         edge=None
         try:
             temp = (action["src"], action["dst"])
@@ -83,9 +94,28 @@ class NetworkXGraph(AnimatedObject):
         return [ edge.animate.set_color(ManimColor(action["color"])) ]
 
     def _animate_vertexcolor(self, action:dict) -> list[Animation]:
+        '''
+        Here is what action should look like
+        {
+        "type": "vertexcolor",
+        "vertex": the key of a vertex from the networkx graph the object was constructed with,
+        "color": anything that can be used to construct a ManimColor object; usually a [r,g,b,a] float tuple
+        }
+        if there is no action["vertex"] vertex in the graph, an exception will be thrown.
+
+        '''
         return [ self.sceneGraph.vertices[action["vertex"]].animate.set_color(ManimColor(action["color"])) ]    
 
     def _animate_addedge(self, action:dict) -> list[Animation]:
+        '''
+        Here is what action should look like
+        {
+        "type": "addedge",
+        "src": the key of a vertex from the networkx graph the object was constructed with,
+        "dst": the key of a vertex from the networkx graph the object was constructed with,
+        "label": optional. But must be a string.
+        }
+        '''
         src = action["src"]
         dst = action["dst"]
         rets = [ self.sceneGraph.animate.add_edges((src, dst)) ]
@@ -100,6 +130,14 @@ class NetworkXGraph(AnimatedObject):
         return rets
 
     def _animate_setvertexlocation(self, action:dict) -> list[Animation]:
+        '''
+        Here is what action should look like
+        {
+        "type": "setvertexlocation",
+        "vertex": the key of a vertex from the networkx graph the object was constructed with,
+        "pos": a 3d coordinate (list of floats)
+        }
+        '''
         v = action["vertex"]
         pos = action["pos"] 
         #TODO: check types
@@ -121,6 +159,15 @@ class NetworkXGraph(AnimatedObject):
         return rets
 
     def _animate_addvertex(self, action:dict) -> list[Animation]:
+        '''
+        Here is what action should look like
+        {
+        "type": "addvertex",
+        "vertex": the key for a vertex that should be the networkx compatible and not yet existent
+        "pos": optional, a 3d coordinate (list of floats)
+        "label": optional, a string
+        }
+        '''
         rets = []
             
         v = action["vertex"]
@@ -147,24 +194,8 @@ class NetworkXGraph(AnimatedObject):
     
     def animate(self, action:dict) -> list[Animation]:
         '''
-        NetworkXGraph supports the following actions:
+        NetworkXGraph supports a few actions. They are documented in the individual functions.
         
-        {
-        "type": "edgecolor",
-        "src": the key of a vertex from the networkx graph the object was constructed with,
-        "dst": the key of a vertex from the networkx graph the object was constructed with,
-        "color": anything that can be used to construct a ManimColor object; usually a [r,g,b,a] float tuple
-        }
-        if there is no (action["src"],action["dst"]) edge in the graph, an exception will be thrown.
-
-        {
-        "type": "vertexcolor",
-        "vertex": the key of a vertex from the networkx graph the object was constructed with,
-        "color": anything that can be used to construct a ManimColor object; usually a [r,g,b,a] float tuple
-        }
-        if there is no action["vertex"] vertex in the graph, an exception will be thrown.
-
-        TODO: there are more ops; not documented yet
         
         TODO: should detect malformed dictionaries and throw exception if malformed
         '''
