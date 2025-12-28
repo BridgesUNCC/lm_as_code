@@ -14,7 +14,12 @@ class ImageAnimation(AnimatedObject):
         
         #TODO: check existance
         self.imagemobject = ImageMobject(data["base"])
-
+        self.imagemobject.scale_to_fit_width(config.frame_width)
+        
+        # If the image is still taller than the screen, scale it to fit height instead
+        if self.imagemobject.height > config.frame_height:
+            self.imagemobject.scale_to_fit_height(config.frame_height)
+        
         self.renderer.add(self.imagemobject)
         
     
