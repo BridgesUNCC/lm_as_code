@@ -1,10 +1,19 @@
 from manim import Animation
+from manim import VGroup
+from manim import Group
+from manim import FadeIn
+from manim import FadeOut
+
 
 class AnimatedObject:
     renderer = None
+    group = None
+    
     
     def __init__ (self, renderer):
         self.renderer = renderer
+        self.group = Group()
+        self.renderer.add(self.group)
     
     def animate(self, action:dict) -> list[Animation]:
         '''
@@ -18,4 +27,25 @@ class AnimatedObject:
 
         TODO: should specify what kind of exception thrown
         '''
+        if action["type"] == "fadeout":
+            return [ FadeOut(self.group) ]
+
+        if action["type"] == "fadein":
+            return [ FadeIn(self.group) ]
+
+        if action["type"] == "scale":
+            ratio = action["ratio"]
+            return [ self.group.animate.scale(ratio) ]
+        
+        if action["type"] == "translate":
+            normalized = action["vector"]
+            for i in range(3):
+                normalized[i] *= 4 #stupid manim coordinate system
+            return [ self.group.animate.shift(normalized) ]
+
+        if action["type"] == "matrixtransform":
+            mat = action["matrix"]
+            return [ self.group.animate.apply_matrix(mat) ]
+            
+        
         raise "WTF"
