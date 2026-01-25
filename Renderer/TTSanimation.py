@@ -1,8 +1,9 @@
 from AnimatedObject import AnimatedObject
 from manim import *
-from TTS.api import TTS #from coqui-ai
+from TTS.api import TTS
 import wave
 import contextlib
+import torch
 
 class TTSanimation(AnimatedObject):
     tts = None
@@ -22,7 +23,8 @@ class TTSanimation(AnimatedObject):
         data should be all the configuration for that TTS voice. Currently none, so we ignore it.
         '''
         AnimatedObject.__init__(self, renderer)
-        self.tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2")
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to(device)
 
         
     
