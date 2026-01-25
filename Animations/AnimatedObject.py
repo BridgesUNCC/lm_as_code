@@ -10,6 +10,10 @@ class AnimatedObject:
         self.animations = []
         self.camera={}
 
+    def place_camera(self, location):
+        # assert location is 4 uple [top, left, bottom, right]
+        self.camera["location"] = location
+        
     def initial(self):
         '''
         return the object representing the initial state of the animated object
