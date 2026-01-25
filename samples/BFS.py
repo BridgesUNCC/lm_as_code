@@ -66,7 +66,8 @@ def makegraph():
         return sceneNXGraph
 
 
-def make_animation(animatedgraph: NetworkXGraph, tts: TTSanimation, ma: MasterAnimation):
+def make_animation(animatedgraph: NetworkXGraph, tts: TTSanimation, 
+                                       ma: MasterAnimation):
         sceneNXGraph = animatedgraph.nxgraph #treat as read only
         weightedEdgesArr = [(edge[0], edge[1], sceneNXGraph.edges[edge]["weight"]) for edge in sceneNXGraph.edges()]
 
@@ -88,38 +89,33 @@ def make_animation(animatedgraph: NetworkXGraph, tts: TTSanimation, ma: MasterAn
         animation_steps = []
         mark = {}
         animatedgraph.color_vertex(src, srcColor)
-        tts.say(f"Starting BFS traversal at vertex {bfsGraph.nodes[0]}.")
+        tts.say(f"Starting BFS traversal at vertex {src}.")
         mark[src] = True;
         ma.step()
 
         for edge in bfs_edges:
             print (edge)
-            if(edge[0], edge[1]) in sceneNXGraph.edges: 
-               temp = (edge[0], edge[1])
-            else:
-               temp = (edge[1], edge[0])
-               src = temp[0]
-               dst = temp[1]
+        #    if(edge[0], edge[1]) in sceneNXGraph.edges: 
+        #        temp = (edge[0], edge[1])
+        #    else:
+        #        temp = (edge[1], edge[0])
+            src = edge[0]
+            dst = edge[1]
                 
-               animatedgraph.color_edge(src, dst, edgeColor)
-               tts.say(f"Adding edge ({src}, {dst}) as part of the BFS traversal.")
-               ma.step()
-                
-               vertex = edge[0]
-               if vertex not in mark:
-                   mark[vertex] = True
-        
-                   animatedgraph.color_vertex(vertex, vertexMarkColor)
-                   tts.say(f"Visiting vertex {vertex}.")
-                    
-               vertex = edge[1]
-               if vertex not in mark:
-                   animatedgraph.color_vertex(vertex, vertexMarkColor)
-                   tts.say(f"Marking {vertex} as reached.")
-                   mark[vertex] = True
-                    
-               ma.step()
+            animatedgraph.color_edge(src, dst, edgeColor)
 
+            # color the edge
+            tts.say(f"Traversing through edge ({src}, {dst}) as part of the BFS traversal.")
+            ma.step()
+                
+            # mark and color the destination vertex
+            vertex = dst
+            if vertex not in mark:
+                mark[vertex] = True
+        
+                animatedgraph.color_vertex(vertex, vertexColor)
+                tts.say(f"Visiting vertex {vertex}.")
+                ma.step()
 
 
 if __name__ == "__main__":
@@ -127,6 +123,7 @@ if __name__ == "__main__":
 
     #set up the animation objects we need
     my_graph = makegraph()
+    
     tts = TTSanimation("tts")
     animated_graph = NetworkXGraph("G", my_graph)
 
