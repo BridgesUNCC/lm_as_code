@@ -75,36 +75,39 @@ def make_animation(animatedgraph: NetworkXGraph, tts: TTSanimation,
         edgeColor = [0.,1.,0.,1.]
         vertexColor = [1., 0., 1., 0.6]; 
        
-        #Calculate minimum spanning tree of the graph using Prim's algorithm.
-        bfsGraph = nx.Graph() #Duplicate graph of sceneNXGraph. Used to calculate minimum spanning tree.
+        # Do a BFS traversal of the graph
+
+		# duplicate graph
+        bfsGraph = nx.Graph() 
         bfsGraph.add_nodes_from([v for v in sceneNXGraph.nodes])
-        bfsGraph.add_weighted_edges_from(weightedEdgesArr)
+        #bfsGraph.add_weighted_edges_from(weightedEdgesArr)
 
         # run bfs traversal on graph, using first node as source
         src = list(bfsGraph.nodes)[0];
-        bfs = nx.bfs_edges(bfsGraph, src)
-        bfs_edges = list(bfs)
-        print(bfs_edges)
 
+        # get the edges using NetworkX's algoritm for BFS traversal
+        bfs = nx.bfs_edges(bfsGraph, src)
+
+        #put into a list
+        bfs_edges = list(bfs)
+
+        # build the animation
         animation_steps = []
+
+        # highlight the source node node
         mark = {}
         animatedgraph.color_vertex(src, srcColor)
         tts.say(f"Starting BFS traversal at source vertex {src}")
         mark[src] = True;
         ma.step()
 
+        # traverse through the edges, marking the edges and vertices
         for edge in bfs_edges:
-            print (edge)
-        #    if(edge[0], edge[1]) in sceneNXGraph.edges: 
-        #        temp = (edge[0], edge[1])
-        #    else:
-        #        temp = (edge[1], edge[0])
             src = edge[0]
             dst = edge[1]
                 
-            animatedgraph.color_edge(src, dst, edgeColor)
-
             # color the edge
+            animatedgraph.color_edge(src, dst, edgeColor)
             tts.say(f"Traversing through edge ({src}, {dst})")
             ma.step()
                 
