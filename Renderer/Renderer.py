@@ -7,7 +7,7 @@ from AnimatedObject import AnimatedObject
 from TTSanimation import TTSanimation
 from NetworkXGraph import NetworkXGraph
 from Image import ImageAnimation
-
+import traceback
 
         
 class Renderer(Scene):
@@ -63,17 +63,25 @@ class Renderer(Scene):
             initialdata = data["initial"]
             
             for key, value in initialdata.items():
-                print (key, value)
-                #TODO check key is string
-                if value["type"] == "nx":
-                    self.objects[key] = NetworkXGraph(self, value["data"])
+                objtype = ""
+                try:
+                    print (key, value)
+                    #TODO check key is string
 
-                if value["type"] == "tts":
-                    self.objects[key] = TTSanimation(self, value["data"])
+                    objtype = value["type"]
+                    if objtype == "nx":
+                        self.objects[key] = NetworkXGraph(self, value["data"])
 
-                if value["type"] == "image":
-                    self.objects[key] = ImageAnimation(self, value["data"])
+                    if objtype == "tts":
+                        self.objects[key] = TTSanimation(self, value["data"])
 
+                    if objtype == "image":
+                        self.objects[key] = ImageAnimation(self, value["data"])
+                except Exception as e:
+                    print(f"Exception raised while building initial state for {key} of type {objtype}: {type(e).__name__}")
+                    print("Traceback:")
+                    traceback.print_exc()
+                    sys.exit(-1)
                     
             self.animation_steps = data["animation"]
         
