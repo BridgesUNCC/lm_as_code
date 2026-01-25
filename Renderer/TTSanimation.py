@@ -1,6 +1,6 @@
 from AnimatedObject import AnimatedObject
 from manim import *
-from TTS.api import TTS #from coqui-ai
+from TTS.api import TTS
 import wave
 import contextlib
 import torch
