@@ -14,12 +14,12 @@ class AnimatedObject:
     camera = None
     view_buffer = None
     
-    def __init__ (self, renderer):
+    def __init__ (self, renderer, data = None):
         self.renderer = renderer
         self.group = Group()
         self.renderer.add(self.group)
 
-        ## Camera logic
+        ## Setup Camera logic
         cam_config = {
             "pixel_height": config.pixel_height,
             "pixel_width": config.pixel_width,
@@ -28,12 +28,20 @@ class AnimatedObject:
         }
         self.camera = RestrictedCamera(only_render=[self.group], **cam_config)
         self.view_buffer = ImageMobjectFromCamera(self.camera)
+
         self.view_buffer.set_width(config.frame_width-1)
         self.view_buffer.set_z_index(1000)
-        self.renderer.add(self.view_buffer)
         
+        self.renderer.add(self.view_buffer)
+
         self.renderer.add_updater(lambda dt: self.camera.capture_mobjects())
         
+    def style_camera(self, renderer, data) :
+        if "hidecamera" in data:
+            if data["hidecamera"]:
+                print ("hiding")
+                self.view_buffer.move_to ([100., 100., 0.]) #that's hacky but that should work    
+            
         
     def animate(self, action:dict) -> list[Animation]:
         '''
@@ -100,7 +108,6 @@ class RestrictedCamera(MovingCamera):
         for a in self.only_render:
             all_mobs_in_only_render.extend(self.get_all_mobjects_recursive(a))
 
-        print (f"all mobs in only render: {len(all_mobs_in_only_render)}")
+        #print (f"all mobs in only render: {len(all_mobs_in_only_render)}")
             
-        #print(f"{len(filtered_mobjects)}")
         super().capture_mobjects(all_mobs_in_only_render, **kwargs)

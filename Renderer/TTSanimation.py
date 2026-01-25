@@ -22,10 +22,11 @@ class TTSanimation(AnimatedObject):
         
         data should be all the configuration for that TTS voice. Currently none, so we ignore it.
         '''
-        AnimatedObject.__init__(self, renderer)
+        AnimatedObject.__init__(self, renderer, data)
         device = "cuda" if torch.cuda.is_available() else "cpu"
         self.tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to(device)
 
+        
         
     
     def animate(self, action:dict) -> list[Animation]:

@@ -77,6 +77,9 @@ class Renderer(Scene):
 
                     if objtype == "image":
                         self.objects[key] = ImageAnimation(self, value["data"])
+
+                    if "camera" in value:
+                        self.objects[key].style_camera(self, value["camera"])
                 except Exception as e:
                     print(f"Exception raised while building initial state for {key} of type {objtype}: {type(e).__name__}")
                     print("Traceback:")

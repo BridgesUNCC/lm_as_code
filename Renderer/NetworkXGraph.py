@@ -31,7 +31,7 @@ class NetworkXGraph(AnimatedObject):
 
         TODO:weight should probably be optional?
         '''
-        AnimatedObject.__init__(self, renderer)
+        AnimatedObject.__init__(self, renderer, data)
         self.sceneNXGraph = nx.node_link_graph(data)
 
         self.vertexPositions = {v: self.sceneNXGraph.nodes[v]["pos"] for v in self.sceneNXGraph}
