@@ -4,17 +4,37 @@ from manim import Group
 from manim import FadeIn
 from manim import FadeOut
 
+from manim import MovingCamera
+from manim import config
+from manim import ImageMobjectFromCamera
 
 class AnimatedObject:
     renderer = None
     group = None
-    
+    camera = None
+    view_buffer = None
     
     def __init__ (self, renderer):
         self.renderer = renderer
         self.group = Group()
         self.renderer.add(self.group)
-    
+
+        ## Camera logic
+        cam_config = {
+            "pixel_height": config.pixel_height,
+            "pixel_width": config.pixel_width,
+            "frame_height": config.frame_height,
+            "frame_width": config.frame_width,
+        }
+        self.camera = RestrictedCamera(only_render=[self.group], **cam_config)
+        self.view_buffer = ImageMobjectFromCamera(self.camera)
+        self.view_buffer.set_width(config.frame_width-1)
+        self.view_buffer.set_z_index(1000)
+        self.renderer.add(self.view_buffer)
+        
+        self.renderer.add_updater(lambda dt: self.camera.capture_mobjects())
+        
+        
     def animate(self, action:dict) -> list[Animation]:
         '''
         animate will return a list of manim animations that will be played at the same time.
@@ -49,3 +69,38 @@ class AnimatedObject:
             
         
         raise "WTF"
+
+
+    
+class RestrictedCamera(MovingCamera):
+    def __init__(self, *args, **kwargs):
+        self.only_render = kwargs.pop("only_render", [])
+        super().__init__(*args, **kwargs)
+
+    def get_all_mobjects_recursive(self, group):
+        all_mobjects = []
+    
+        for item in group.submobjects:
+            all_mobjects.append(item)
+            # Check if the item has submobjects (meaning it's a Group or VGroup)
+            if len(item.submobjects) > 0:
+                # Recursively extend the list with items from the sub-group
+                all_mobjects.extend(self.get_all_mobjects_recursive(item))
+            
+        return all_mobjects
+
+        
+    def capture_mobjects(self, **kwargs):
+        self.reset()
+
+        # We only render what this camera is allowed to see.
+
+        #print (len(filtered_mobjects))
+        all_mobs_in_only_render = []
+        for a in self.only_render:
+            all_mobs_in_only_render.extend(self.get_all_mobjects_recursive(a))
+
+        print (f"all mobs in only render: {len(all_mobs_in_only_render)}")
+            
+        #print(f"{len(filtered_mobjects)}")
+        super().capture_mobjects(all_mobs_in_only_render, **kwargs)

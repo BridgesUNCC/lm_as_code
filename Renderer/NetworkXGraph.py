@@ -68,7 +68,8 @@ class NetworkXGraph(AnimatedObject):
             label.move_to(center)
             self.edgeLabels.add(label)
             self.edgeLabelsObjects[edge] = label
-            
+        
+        self.group.add(self.sceneGraph, self.edgeLabels, self.vertexLabels)
         self.renderer.add(self.sceneGraph, self.edgeLabels, self.vertexLabels)
 
     def _animate_edgecolor(self, action:dict) -> list[Animation]:

@@ -82,10 +82,19 @@ class Renderer(Scene):
                     print("Traceback:")
                     traceback.print_exc()
                     sys.exit(-1)
+
+            # The cameras are set for z = 1000
+            # We need a background rect at z = 999 in order to cover whatever the scene is.
+            # We are kind of hoping that 999 is good enough.
+            # Yeah it's hacky; sue me! :)
+            backgroundrect = Rectangle(color=BLUE, width=20, height=8, fill_color=BLUE, fill_opacity=1.)
+            backgroundrect.set_z_index(999)
+            self.add(backgroundrect)
                     
             self.animation_steps = data["animation"]
         
     def construct(self):
+        self.wait()
         #Animation.
         for animation_step in self.animation_steps:
             the_actions = []
