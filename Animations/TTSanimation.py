@@ -1,6 +1,11 @@
 from Animations.AnimatedObject import *
 
 class TTSanimation(AnimatedObject):
+
+    def __init__(self, name: str):
+        super().__init__(name)
+        
+        self.camera["hidecamera"] = True
     
     def initial(self):
         ret = super().initial()

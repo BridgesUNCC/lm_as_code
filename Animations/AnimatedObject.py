@@ -3,16 +3,18 @@
 class AnimatedObject:
     name = None
     animations = None
+    camera = None
     
     def __init__(self, name: str):
         self.name = name
         self.animations = []
+        self.camera={}
 
     def initial(self):
         '''
         return the object representing the initial state of the animated object
         '''
-        return {"name": self.name, "data": {}}
+        return {"name": self.name, "data": {}, "camera": self.camera}
 
     def base_animation_step(self) -> dict:
         
