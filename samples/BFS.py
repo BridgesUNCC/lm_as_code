@@ -73,8 +73,7 @@ def make_animation(animatedgraph: NetworkXGraph, tts: TTSanimation,
 
         srcColor = [1.,0.,0.,0.6]
         edgeColor = [0.,1.,0.,1.]
-        #vertexColor = [1., 1., 0., 0.6]; 
-        vertexColor = [1., 0., 0., 0.6]; 
+        vertexColor = [1., 1., 0., 0.6]; 
        
         #Calculate minimum spanning tree of the graph using Prim's algorithm.
         bfsGraph = nx.Graph() #Duplicate graph of sceneNXGraph. Used to calculate minimum spanning tree.
