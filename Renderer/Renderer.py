@@ -95,9 +95,12 @@ class Renderer(Scene):
                 try:
                     the_actions.extend(self.objects[applyon].animate(data)) #should catch exception and generate easier to interpret error message
                 except Exception as e:
-                    print ("Exception while processing this action")
+                    print (f"Exception while processing action on {applyon}: {type(e).__name__}")
+                    print ("action was: ")
                     print (action)
-                    raise
+                    print("Traceback:")
+                    traceback.print_exc()
+                    sys.exit(-1)
                 
             self.play (the_actions)
                 
