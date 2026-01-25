@@ -89,7 +89,7 @@ def make_animation(animatedgraph: NetworkXGraph, tts: TTSanimation,
         animation_steps = []
         mark = {}
         animatedgraph.color_vertex(src, srcColor)
-        tts.say(f"Starting BFS traversal at vertex {src}.")
+        tts.say(f"Starting BFS traversal at vertex {src}")
         mark[src] = True;
         ma.step()
 
@@ -105,7 +105,7 @@ def make_animation(animatedgraph: NetworkXGraph, tts: TTSanimation,
             animatedgraph.color_edge(src, dst, edgeColor)
 
             # color the edge
-            tts.say(f"Traversing through edge ({src}, {dst}) as part of the BFS traversal.")
+            tts.say(f"Traversing through edge ({src}, {dst}) as part of the BFS traversal")
             ma.step()
                 
             # mark and color the destination vertex
@@ -114,7 +114,7 @@ def make_animation(animatedgraph: NetworkXGraph, tts: TTSanimation,
                 mark[vertex] = True
         
                 animatedgraph.color_vertex(vertex, vertexColor)
-                tts.say(f"Visiting vertex {vertex}.")
+                tts.say(f"Visiting vertex {vertex}")
                 ma.step()
 
 
