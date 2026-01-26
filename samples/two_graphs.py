@@ -101,7 +101,8 @@ if __name__ == "__main__":
     animated_graph2.color_vertex(3, vertexMarkColor)
 
     my_master_anim.step()
-    
+
+    animated_graph2.hide_camera()
     animated_graph.move_camera([4., -7., -4., 7])
     
     

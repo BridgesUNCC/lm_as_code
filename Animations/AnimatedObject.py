@@ -33,6 +33,15 @@ class AnimatedObject:
                          }
         self.animations.append(stuff)
 
+    def hide_camera(self, hidden=True):
+        stuff = self.base_animation_step()
+        stuff["data"] = {"type":"hidecamera",
+                         "hidecamera": hidden
+                         }
+        self.animations.append(stuff)
+
+    def show_camera(self):
+        return self.hide_camera(False)
     
     def flush_animations(self) -> list[dict]:
         '''

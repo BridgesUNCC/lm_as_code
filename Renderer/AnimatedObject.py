@@ -3,6 +3,8 @@ from manim import VGroup
 from manim import Group
 from manim import FadeIn
 from manim import FadeOut
+from manim import animation
+
 
 from manim import MovingCamera
 from manim import config
@@ -13,6 +15,14 @@ class AnimatedObject:
     group = None
     camera = None
     view_buffer = None
+    camera_visible = True
+
+    def _camera_z(self):
+        if self.camera_visible:
+            return 1000
+        else:
+            return -1000
+        
     
     def __init__ (self, renderer, data = None):
         self.renderer = renderer
@@ -30,7 +40,8 @@ class AnimatedObject:
         self.view_buffer = ImageMobjectFromCamera(self.camera)
 
         self.view_buffer.set_width(config.frame_width-1)
-        self.view_buffer.set_z_index(1000)
+        self.camera_visible = True
+        self.view_buffer.set_z_index(self._camera_z())
         
         self.renderer.add(self.view_buffer)
 
@@ -40,7 +51,14 @@ class AnimatedObject:
         if "hidecamera" in data:
             if data["hidecamera"]:
                 print ("hiding")
-                self.view_buffer.move_to ([100., 100., 0.]) #that's hacky but that should work    
+                self.camera_visible = False
+                self.view_buffer.set_z_index(self._camera_z())
+            else:
+                print ("showing")
+                self.camera_visible = True
+                self.view_buffer.set_z_index(self._camera_z())
+
+                
         if "location" in data:
             loc = data["location"]
             #TODO assert 4 floats
@@ -54,7 +72,22 @@ class AnimatedObject:
             #this probably doesn't do exactly what you asked but should keep aspect ratio consistent, maybe?
             self.view_buffer.height = h
             self.view_buffer.width = w
-            self.view_buffer.move_to([left+w/2, bottom+h/2, 1000]) #move_to is center based
+            self.view_buffer.move_to([left+w/2, bottom+h/2, self._camera_z()]) #move_to is center based
+
+    def _hide_camera(self, action):
+        if action["hidecamera"]:
+            print ("hiding")
+            self.camera_visible = False
+        else:
+            print ("showing")
+            self.camera_visible = True
+
+        self.view_buffer.set_z_index(self._camera_z()) 
+
+        wait_anim = animation.animation.Wait(1)
+
+        return [ wait_anim ]
+
             
     def _move_camera(self, action):
         loc = action["location"]
@@ -68,8 +101,10 @@ class AnimatedObject:
         w = right - left
         #this probably doesn't do exactly what you asked but should keep aspect ratio consistent, maybe?
 
-        return [ self.view_buffer.animate.set_height(h).set_width(w).move_to([left+w/2, bottom+h/2, 1000])]
-            
+        return [ self.view_buffer.animate.set_height(h).set_width(w).move_to([left+w/2, bottom+h/2, self._camera_z()])]
+
+
+    
     def animate(self, action:dict) -> list[Animation]:
         '''
         animate will return a list of manim animations that will be played at the same time.
@@ -104,7 +139,10 @@ class AnimatedObject:
 
         if action["type"] == "movecamera":
             return self._move_camera(action) 
-        
+
+        if action["type"] == "hidecamera":
+            return self._hide_camera(action) 
+
         
         raise "WTF"
 
