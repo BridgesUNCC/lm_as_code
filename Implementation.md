@@ -179,3 +179,21 @@ animation step, you can only play one message. If you try to play
 more; there be dragons.
 
 
+### Camera
+
+So the Camera logic is super hacky in the
+Renderer. Essentially each `AnimatedObject` maintains its own
+camera. The camera will filter all the Mobject of the `AnimatedObject`
+and only render those. It renders those in an image
+(`AnimatedObject.view_buffer`) 
+
+That image is then renders like a regular things on the scene. The
+issue is that that image lives in the same space as all the regular
+objects on the scene, so it may overlap with them. To solve this
+problem, the image is renderer at very high z-index so it is in the
+front. But the scene still lives "under" it. So a rectangle is added
+(in `Renderer/Renderer.py`) to mask the objects of the scene and only
+live the camera as visible.
+
+To hide the camera they are actually moved to a very low z-index to be
+behind the background.
