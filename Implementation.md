@@ -74,12 +74,14 @@ animation group.
 In the animation library, everything that will get rendered is a child
 object of `AnimatedObject`. The animation objects have an initial
 state. And they will expose a set of functions that enable to modify
-the animated object. The `AnimatedObject` store the changes to the
+the animated object. The `AnimatedObject` stores the changes to the
 object in a buffer of some sort and that buffer can be flushed to
 output the animation.
 
 In other words, if you want to group multiple animations, you only
-flush between groups.
+flush between groups. The `AnimatedObject`s are managed by the
+`MasterAnimation`. You call `MasterAnimation.step()` to mark the
+boundary between animation steps.
 
 At the moment only few types of objects are defined:
 
@@ -91,16 +93,48 @@ the object can be given position in order to control where on the
 frame the vertices will be.
 
 The object currently only supports few operations, coloring vertices, and
-coloring edges, adding vertices and edges, and setting vertex positions
+coloring edges, adding vertices and edges, and setting vertex positions.
+
+There is an example of how to use this in `samples/graph_sample.py`.
 
 ### TTS
 
 Currently only supports a single operation `say`ing a piece of text.
+In theory, this object should enable to set models and voices used. But
+currently only supports a basic voice.
+
+There is an example of how to use this in `samples/tts_sample.py`
 
 ### Image
 
 Lets you put a static image. Any manim image format works. Bitmap
-formats really. For instance `.jpg`, and `.png`.
+formats really, such `.jpg`, and `.png`. There is an example of how to
+use this in `samples/image_sample.py`
+
+Note that at the moment the files that are shown stay as part of the
+file system. (They don't get baked in the JSON.) So they still need to
+be accessible from the same location by the time the renderer is
+called.
+
+### Camera management
+
+Each object will be rendered in their own subvideo. These are
+internally called Camera. You can think of them as graphics
+viewport. This means that the coordinate system of an object is
+independent from the coordinate system of another object. This enables
+you to have different object on the scene and to control placement
+independently or even whether they are shown at all.
+
+Each `AnimatedObject` has its own camera logic. right now
+`AnimatedObject.place_camera()` is used to chose where the camera
+start when the animation begins. `AnimatedObject.move_camera()` is
+used during the animation to relayout where things are.
+
+The camera can be activated/deactivated with
+`AnimatedObject.hide_camera()` and `AnimatedObject.show_camera()`.
+
+There is an example of camera usage in `samples/two_graphs/py`.
+
 
 ## Renderer
 
