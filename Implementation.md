@@ -122,7 +122,7 @@ Each object will be rendered in their own subvideo. These are
 internally called Camera. You can think of them as graphics
 viewport. This means that the coordinate system of an object is
 independent from the coordinate system of another object. This enables
-you to have different object on the scene and to control placement
+you to have different objects on the scene and to control placement
 independently or even whether they are shown at all.
 
 Each `AnimatedObject` has its own camera logic. right now
@@ -165,7 +165,7 @@ played.
 
 Except there is no good way in Manim to do that within the animation
 framework. So the solution for synchronization to work is to play the
-sound and insert a manim wait animation object. 
+sound and insert a manim wait animation object.
 
 Also for stupid caching reasons, a fake text is inserted but made
 invisible to avoid breaking caching. That means that any animation (a
@@ -181,11 +181,10 @@ more; there be dragons.
 
 ### Camera
 
-So the Camera logic is super hacky in the
-Renderer. Essentially each `AnimatedObject` maintains its own
-camera. The camera will filter all the Mobject of the `AnimatedObject`
-and only render those. It renders those in an image
-(`AnimatedObject.view_buffer`) 
+So the Camera logic is super hacky in the Renderer. Essentially each
+`AnimatedObject` maintains its own camera. The camera will filter all
+the Mobject of the `AnimatedObject` and only render those. It renders
+those in an image (`AnimatedObject.view_buffer`)
 
 That image is then renders like a regular things on the scene. The
 issue is that that image lives in the same space as all the regular
