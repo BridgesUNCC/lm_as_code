@@ -68,7 +68,8 @@ def makegraph():
 
 
 def make_animation(animatedgraph: NetworkXGraph, tts: TTSanimation, 
-                                       ma: MasterAnimation):
+                                       ma: MasterAnimation,
+                                       level:str = "detailed"):
         sceneNXGraph = animatedgraph.nxgraph #treat as read only
         bfsGraph = sceneNXGraph
         weightedEdgesArr = [(edge[0], edge[1], sceneNXGraph.edges[edge]["weight"]) for edge in sceneNXGraph.edges()]
@@ -87,40 +88,56 @@ def make_animation(animatedgraph: NetworkXGraph, tts: TTSanimation,
         
         # highlight the source node node
         mark = {}
-        animatedgraph.color_vertex(src, srcColor)
-        tts.say(f"Starting BFS traversal at source vertex {src}")
+        if level == "detailed" or level == "highest":
+            animatedgraph.color_vertex(src, srcColor)
+            tts.say(f"Starting BFS traversal at source vertex {src}")
+            ma.step()
         mark[src] = True;
         bfsOrder.append(src)
         toVisit.append(src)
-        ma.step()
+
 
         
         while len(toVisit) > 0:
             current = toVisit[0]
             toVisit = toVisit[1:] #effectively pop
             print (f"processing {current}")
-            tts.say(f"Considering neighbors of vertex {current}")
 
-            ma.step()
+            if level == "detailed" or level == "highest":
+                tts.say(f"Considering the neighbors of vertex {current}")
+                ma.step()
+            newvertices = []
             
             for nei in bfsGraph.neighbors(current):
                 print (f"neighbor {nei}")
-                tts.say(f"Considering edge ({current}, {nei})")
-                
-                ma.step()
+                if level == "detailed":
+                    tts.say(f"Considering edge ({current}, {nei})")
+                    ma.step()
                 
                 if nei not in mark:
                     mark[nei] = True
-        
-                    animatedgraph.color_vertex(nei, vertexColor)
-                    tts.say(f"Visiting vertex {nei} for the first time")
                     bfsOrder.append(nei)
                     toVisit.append(nei)
+                    newvertices.append(nei)
+
+                    if level == "detailed":
+                        animatedgraph.color_vertex(nei, vertexColor)
+                        tts.say(f"Visiting vertex {nei} for the first time.")
+                        ma.step()
+                    if level == "highest":
+                        animatedgraph.color_vertex(nei, vertexColor)
+
+                else:
+                    if level == "detailed":
+                        tts.say(f"Vertex {nei} has already been visited.")
+                        ma.step()
+            if level == "highest":
+                if len(newvertices)>0:
+                    tts.say(f"{len(newvertices)} have been discovered: {str(newvertices)}")
                     ma.step()
                 else:
-                    tts.say(f"Vertex {nei} has already been visited")
+                    tts.say("No new vertices have been discovered.")
                     ma.step()
-                    
 
 
 if __name__ == "__main__":
@@ -128,18 +145,22 @@ if __name__ == "__main__":
 
     #set up the animation objects we need
     my_graph = makegraph()
+    my_graph2 = my_graph.copy()
     
     slide = Image("slide", "samples/img1.png")
     tts = TTSanimation("tts")
     animated_graph = NetworkXGraph("G", my_graph)
+    animated_graph2 = NetworkXGraph("G2", my_graph)
     animated_graph.init_hidecamera()
+    animated_graph2.init_hidecamera()
     
     my_master_anim.addAnimatedObject("slide", slide)
     my_master_anim.addAnimatedObject("tts", tts)
     my_master_anim.addAnimatedObject("G", animated_graph)
+    my_master_anim.addAnimatedObject("G2", animated_graph2)
 
 
-    tts.say("Some insightful description of bfs")
+    tts.say("Some insightful description of bfs.")
     
     my_master_anim.step()
     
@@ -149,11 +170,24 @@ if __name__ == "__main__":
     my_master_anim.step()
     
     #actually build the BFS animation
-    make_animation(animated_graph, tts, my_master_anim)
+    make_animation(animated_graph, tts, my_master_anim, level="highest")
     
     animated_graph.hide_camera()
     slide.show_camera()
-    tts.say("Wow, you so good at BFS now!")
+    tts.say("Wow, you good at BFS now! Let's go in more detail, one edge at a time.")
+
+    my_master_anim.step()
+
+    animated_graph2.show_camera()
+    slide.show_camera()
+    my_master_anim.step()
+    
+    #actually build the BFS animation
+    make_animation(animated_graph2, tts, my_master_anim, level="detailed")
+    
+    animated_graph2.hide_camera()
+    slide.show_camera()
+    tts.say("Wow, you SO good at BFS now!")
 
     my_master_anim.step()
     

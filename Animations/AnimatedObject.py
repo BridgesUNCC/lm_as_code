@@ -10,6 +10,10 @@ class AnimatedObject:
         self.animations = []
         self.camera={}
 
+    def init_hidecamera(self):
+        self.camera["hidecamera"] = True
+
+        
     def place_camera(self, location):
         # assert location is 4 uple [top, left, bottom, right]
         self.camera["location"] = location
