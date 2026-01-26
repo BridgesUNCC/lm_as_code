@@ -15,6 +15,9 @@ class Renderer(Scene):
         self.play (r.animate.shift([1., 1., 0.])) #one can shift
 
         self.play ([r.animate.scale(.5), r.animate.shift([1., 1., 0.])]) #but one can't shift AND scale
+
+        #The right syntax is to apply both operations on teh same animation object at once:
+        # self.play ([r.animate.scale(.5).shift([1., 1., 0.])]) #but one can't shift AND scale
         
 
                 

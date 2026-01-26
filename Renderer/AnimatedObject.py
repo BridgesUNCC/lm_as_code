@@ -56,7 +56,20 @@ class AnimatedObject:
             self.view_buffer.width = w
             self.view_buffer.move_to([left+w/2, bottom+h/2, 1000]) #move_to is center based
             
-        
+    def _move_camera(self, action):
+        loc = action["location"]
+        #TODO assert 4 floats
+        #format top, left, bottom, right
+        top = loc[0]
+        left = loc[1]
+        bottom = loc[2]
+        right = loc[3]
+        h = top - bottom
+        w = right - left
+        #this probably doesn't do exactly what you asked but should keep aspect ratio consistent, maybe?
+
+        return [ self.view_buffer.animate.set_height(h).set_width(w).move_to([left+w/2, bottom+h/2, 1000])]
+            
     def animate(self, action:dict) -> list[Animation]:
         '''
         animate will return a list of manim animations that will be played at the same time.
@@ -88,7 +101,10 @@ class AnimatedObject:
         if action["type"] == "matrixtransform":
             mat = action["matrix"]
             return [ self.group.animate.apply_matrix(mat) ]
-            
+
+        if action["type"] == "movecamera":
+            return self._move_camera(action) 
+        
         
         raise "WTF"
 

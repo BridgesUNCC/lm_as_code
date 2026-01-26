@@ -23,6 +23,16 @@ class AnimatedObject:
     def base_animation_step(self) -> dict:
         
         return {"applyon": self.name}
+
+    def move_camera(self, location):
+        # assert location is 4 uple [top, left, bottom, right]
+        
+        stuff = self.base_animation_step()
+        stuff["data"] = {"type":"movecamera",
+                         "location": location
+                         }
+        self.animations.append(stuff)
+
     
     def flush_animations(self) -> list[dict]:
         '''

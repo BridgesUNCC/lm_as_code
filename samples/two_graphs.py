@@ -102,6 +102,10 @@ if __name__ == "__main__":
 
     my_master_anim.step()
     
+    animated_graph.move_camera([4., -7., -4., 7])
+    
+    
+    my_master_anim.step()
     
     # output
     data = my_master_anim.complete_animation_object()
